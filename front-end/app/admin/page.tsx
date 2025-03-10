@@ -1,6 +1,7 @@
 "use client";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import useAuthAdmin from "@/hooks/useAuthAdmin";
 import Link from 'next/link';
 
 const pageAdmin = () => {
@@ -13,7 +14,8 @@ const pageAdmin = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorCheckLoginStatus, setErrorCheckLoginStatus] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
+
+    const { isAdmin } = useAuthAdmin();
 
     const router = useRouter();
 
@@ -28,30 +30,7 @@ const pageAdmin = () => {
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         setErrorEmail(!emailPattern.test(e.target.value) ? "البريد الإلكتروني غير صالح." : "")
     };
-    const checkAdminStatus = async () => {
-        try {
-            const response = await fetch(CHECK_ADMIN_URL, {
-                method: "GET",
-                credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-            });
 
-            const data = await response.json();
-            setIsLoggedIn(data.isAdmin);
-            console.log("IS Admin", data.isAdmin)
-            if (!data.isAdmin) {
-                setErrorCheckLoginStatus(" انت لست مدير");
-            } else {
-                setErrorCheckLoginStatus("");
-                router.push("/");
-                return data.isAdmin;
-            }
-            return data.isAdmin;
-
-        } catch (err) {
-            setErrorCheckLoginStatus("حدث خطأ أثناء التحقق من حالة تسجيل دخول المدير  يرجى المحاولة لاحقا. ");
-            return false;
-        }
-    };
     const handleLoginAdmin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setErrorMessage("");
@@ -59,6 +38,13 @@ const pageAdmin = () => {
         if (!email || !password) {
             setErrorMessage("يرجى ملء جميع الحقول.");
             return;
+        }
+        if (!isAdmin) {
+            setErrorCheckLoginStatus(" انت لست مدير");
+        } else {
+            setErrorCheckLoginStatus("");
+            router.push("/");
+            return isAdmin;
         }
         try {
             const loginAdminResponse = await fetch(LOGIN_ADMIN_URL, {

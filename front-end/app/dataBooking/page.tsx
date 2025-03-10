@@ -1,6 +1,5 @@
 "use client";
-
-import { faL } from "@fortawesome/free-solid-svg-icons";
+import useAuth from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -25,9 +24,15 @@ const BookingData = () => {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
+
+  const { isLoading, isLoggedIn, isAdmin } = useAuth();
   const router = useRouter();
 
+
+
+  if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
+
+  if (!isAdmin && !isLoggedIn) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -37,15 +42,9 @@ const BookingData = () => {
         method: "GET",
         credentials: "include", // إرسال الجلسة مع الطلب
       });
-
-      if (response.status === 401) {
-        router.push("/Login");
-        return;
-      }
       if (!response.ok) {
         setError("فشل في تحميل الحجوزات");
       }
-
       const data = await response.json();
       console.log("The bookings : => ", data)
       setBookings(data);

@@ -5,7 +5,6 @@ import "./globals.css";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import AuthChecker from "@/components/CheckAuth";
-import CheckRegister from "@/components/CheckRegister";
 const metadata: Metadata = {
   title: "BeBo Ecommerce website app for shoppers",
   description: "An Ecommerce app for eduction purposes",
@@ -18,7 +17,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       <body>
         <div>
           
-          <AuthChecker />   {/* استخدام مكون تحقق من تسجيل الدخول */}
+          
           <Header />
           {children}
           <Footer />

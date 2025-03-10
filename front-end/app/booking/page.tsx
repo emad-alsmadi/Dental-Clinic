@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import useAuth from "@/hooks/useAuth";
 interface Booking {
     id: string;
     name: string;
@@ -13,8 +13,6 @@ interface Booking {
 }
 
 const API_URL = "http://localhost:5000/api/bookings";
-const CHECK_LOGIN_URL = "http://localhost:5000/api/check-login"; // تحقق من الجلسة
-const CHECK_LOGIN_ADMIN_URL = "http://localhost:5000/api/check-admin"; // تحقق من الجلسة
 
 const Booking = () => {
 
@@ -23,7 +21,7 @@ const Booking = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [errorCheckLoginStatus, setErrorCheckLoginStatus] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
+    //const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -34,6 +32,12 @@ const Booking = () => {
         speciality: "",
         doctor: "",
     });
+    const { isLoading, isLoggedIn } = useAuth();
+
+    if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
+
+    if (!isLoggedIn) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -42,63 +46,6 @@ const Booking = () => {
         });
     };
     // 🟢 جلب الحجوزات
-
-
-
-    // 🟢 التحقق من تسجيل الدخول
-    const checkLoginStatus = async () => {
-        setErrorCheckLoginStatus("")
-        try {
-            const response = await fetch(CHECK_LOGIN_URL, {
-                method: "GET",
-                credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-            });
-            const response2 = await fetch(CHECK_LOGIN_ADMIN_URL, {
-                method: "GET",
-                credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-            });
-
-            const data = await response.json();
-            const data2 = await response2.json();
-            setIsLoggedIn(data.isLoggedIn);
-            console.log(data.isLoggedIn , !data2)
-            if (!data.isLoggedIn && !data2) {
-                setErrorCheckLoginStatus(" يجب تسجيل الدخول ");
-                alert("يجب تسجيل الدخول أولاً!");
-                return;
-            }
-        } catch (err) {
-            setErrorCheckLoginStatus("حدث خطأ أثناء التحقق من حالة تسجيل الدخول يرجى المحاولة لاحقا. ");
-        }
-    };
-    const handleDelete = async (id: string) => {
-        try {
-            const response = await fetch(`${API_URL}/${id}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
-
-            if (response.status === 403) {
-                alert('ليس لديك صلاحية لحذف هذا الحجز');
-                return;
-            }
-
-            if (response.status === 401) {
-                window.location.href = '/LogIn';
-            }
-            if (!response.ok) {
-                throw new Error("فشل في تحميل الحجوزات");
-            }
-
-            const data = await response.json();
-            setBookings(data);
-        } catch (err: any) {
-            setError(err.message || "حدث خطأ أثناء جلب البيانات، حاول مرة أخرى.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -135,11 +82,6 @@ const Booking = () => {
             setLoading(false);
         }
     };
-    // 🟢 حجز موعد جديد
-    useEffect(() => {
-        console.log("hi use effect")
-        checkLoginStatus();
-    }, []);
 
 
     return (

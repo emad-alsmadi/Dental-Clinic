@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 
 export default function AuthChecker() {
     const [isLoading, setIsLoading] = useState(true);
-    const router = useRouter();
+    const [isLoggin, setIsLoggin] = useState(false);
+    const router = useRouter();     
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -20,22 +21,23 @@ export default function AuthChecker() {
 
                 const data = await response.json();
                 const data2 = await response2.json();
+                
                 console.log("login :", data.isLoggedIn)
-                console.log("login admin:", data2)
-                if (!data.isLoggedIn && !data2) {
-                    router.replace("/Login"); // توجيه المستخدم فقط إذا لم يكن مسجلاً
+                console.log("login admin:", data2.isAdmin)
+                setIsLoggin(data.isLoggedIn && data2.isAdmin);
+                if (!data.isLoggedIn && !data2.isAdmin) {
+                    router.push("/Login"); // توجيه المستخدم فقط إذا لم يكن مسجلاً
                 }
             } catch (error) {
-                console.error("خطأ في التحقق من الجلسة:", error);
+                console.log("خطأ في التحقق من الجلسة:", error);
             } finally {
                 setIsLoading(false);
             }
         };
-
         checkAuth();
     }, []);
 
     if (isLoading) return null; // منع التحميل الزائد
-
+    console.log("issssssssss logggggin", isLoggin)
     return null;
 }

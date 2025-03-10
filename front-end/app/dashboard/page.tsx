@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Calendar, Bell, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useRouter } from "next/navigation";
-
+import useAuthAdmin from "@/hooks/useAuthAdmin";
 interface Booking {
     id: string;
     name: string;
@@ -16,8 +16,6 @@ interface Booking {
     doctor: string;
 }
 const API_BOOKINGS_URL = "http://localhost:5000/api/get-bookings";
-const API_CHECK_ADMIN_URL = "http://localhost:5000/api/check-admin";
-
 
 const Dashboard = () => {
     const [appointments, setAppointments] = useState<Booking[]>([]);
@@ -28,32 +26,15 @@ const Dashboard = () => {
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorCheckLoginAdminStatus, setErrorCheckLoginAdminStatus] = useState("");
     const [isLoggedInAdmin, setIsLoggedInAdmin] = useState(false); // حالة تسجيل الدخول
+    const { isLoading, isAdmin } = useAuthAdmin();
     const router = useRouter();
 
-    const checkLoginAdminStatus = async () => {
-        try {
-            const response = await fetch(API_CHECK_ADMIN_URL, {
-                method: "GET",
-                credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-            });
 
-            const isAdmin = await response.json();
-            setIsLoggedInAdmin(isAdmin);
-            console.log("Is he Admin", isAdmin)
-            if (!isAdmin) {
-                setErrorCheckLoginAdminStatus("انت لست مدير");
-                router.push("/");
-                return isAdmin;
-            } else {
-                setErrorCheckLoginAdminStatus("");
-            }
-            return isAdmin;
+    if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
 
-        } catch (err) {
-            setErrorCheckLoginAdminStatus("حدث خطأ أثناء التحقق من حالة تسجيل الدخول يرجى المحاولة لاحقا. ");
-            return false;
-        }
-    };
+    if (!isAdmin) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
+
+   
     // حذف موعد من API Flask
     const handleDelete = async (id: string) => {
         const res = await fetch(`"http://localhost:5000/api/get-bookings"/${id}`, {
@@ -77,41 +58,12 @@ const Dashboard = () => {
     useEffect(() => {
         setError("");
 
-        const checkLoginAdminStatus = async () => {
-            try {
-                const response = await fetch(API_CHECK_ADMIN_URL, {
-                    method: "GET",
-                    credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-                });
-
-                const isAdmin = await response.json();
-                setIsLoggedInAdmin(isAdmin);
-                console.log("Is he Admin", isAdmin)
-                if (!isAdmin) {
-                    setErrorCheckLoginAdminStatus("انت لست مدير");
-                    router.push("/");
-                    return isAdmin;
-                } else {
-                    setErrorCheckLoginAdminStatus("");
-                    console.log("you are admin")
-                }
-                return isAdmin;
-
-            } catch (err) {
-                setErrorCheckLoginAdminStatus("حدث خطأ أثناء التحقق من حالة تسجيل الدخول يرجى المحاولة لاحقا. ");
-                return false;
-            }
-        };
         const fetchBookings = async () => {
             try {
                 const res = await fetch(API_BOOKINGS_URL, {
                     method: "GET",
                     credentials: "include",
                 })
-                // if (res.status === 401) {
-                //     router.push("/dashboard");
-                //     return;
-                // }
                 if (!res.ok) {
                     setError("فشل في  تسجيل دخول الأدمن");
                 }
@@ -123,7 +75,6 @@ const Dashboard = () => {
                 setError("حدث خطأ أثناء الاتصال بسيرفر ، حاول مرة أخرى.");
             }
         }
-        checkLoginAdminStatus();
         fetchBookings();
     }, []);
     return (
