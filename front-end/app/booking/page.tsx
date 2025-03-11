@@ -15,13 +15,10 @@ interface Booking {
 const API_URL = "http://localhost:5000/api/bookings";
 
 const Booking = () => {
-
-    const [bookings, setBookings] = useState<Booking[]>([]);
     const [isBooked, setIsBooked] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [errorCheckLoginStatus, setErrorCheckLoginStatus] = useState("");
-    //const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -32,11 +29,11 @@ const Booking = () => {
         speciality: "",
         doctor: "",
     });
-    const { isLoading, isLoggedIn } = useAuth();
+    const { isLoading, isLoggedIn ,isAdmin } = useAuth();
 
     if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
 
-    if (!isLoggedIn) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
+    if (!isLoggedIn && !isAdmin) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -60,7 +57,7 @@ const Booking = () => {
             });
             const result = await response.json();
             if (!response) {
-                throw new Error(result.error || "حدث خطأ أثناء إرسال البيانات!");  // إضافة  لتجنب حدوث خطأ إذا كانت result.error غير موجودة
+                setError("حدث خطأ أثناء إرسال البيانات!");  // إضافة  لتجنب حدوث خطأ إذا كانت result.error غير موجودة
             }
 
             alert("تم حجز الموعد بنجاح!");

@@ -5,7 +5,6 @@ import useAuthAdmin from "@/hooks/useAuthAdmin";
 import Link from 'next/link';
 
 const pageAdmin = () => {
-    const CHECK_ADMIN_URL = "http://localhost:5000/api/check-admin"; // تحقق من الجلسة
     const LOGIN_ADMIN_URL = "http://localhost:5000/api/login-admin"; // تحقق من الجلسة
     const [password, setPassword] = useState<string>("");
     const [email, setEmail] = useState<string>("");
@@ -35,14 +34,17 @@ const pageAdmin = () => {
         e.preventDefault();
         setErrorMessage("");
         setSuccessMessage("");
+        setErrorCheckLoginStatus("");
         if (!email || !password) {
             setErrorMessage("يرجى ملء جميع الحقول.");
             return;
         }
         if (!isAdmin) {
             setErrorCheckLoginStatus(" انت لست مدير");
+
         } else {
             setErrorCheckLoginStatus("");
+            setSuccessMessage("تم التسجل بنجاح , اهلا بك ايها المدير") 
             router.push("/");
             return isAdmin;
         }

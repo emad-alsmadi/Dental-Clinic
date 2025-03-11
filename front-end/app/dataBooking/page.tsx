@@ -2,6 +2,8 @@
 import useAuth from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Booking {
   id: string;
@@ -14,12 +16,9 @@ interface Booking {
   doctor: string;
 }
 
-const API_URL = "http://localhost:5000/api/get-bookings"; // تعديل الرابط
+const API_URL = "http://localhost:5000/api/get-bookings";
 
-
-
-const BookingData = () => {
-  const [flag, setFlag] = useState<boolean>(true);
+const BookingData: React.FC= () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,69 +27,78 @@ const BookingData = () => {
   const { isLoading, isLoggedIn, isAdmin } = useAuth();
   const router = useRouter();
 
-
-
-  if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
-
-  if (!isAdmin && !isLoggedIn) return null; // سيتم إعادة توجيه المستخدم تلقائيًا إلى صفحة تسجيل الدخول
-
-  const fetchBookings = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch(API_URL, {
-        method: "GET",
-        credentials: "include", // إرسال الجلسة مع الطلب
-      });
-      if (!response.ok) {
-        setError("فشل في تحميل الحجوزات");
+  useEffect(() => {
+    const checkLogin = () => {
+      if (isLoading) {
+        return <p className="flex items-center justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
       }
-      const data = await response.json();
-      console.log("The bookings : => ", data)
-      setBookings(data);
-    } catch (err: any) {
-      setError("حدث خطأ أثناء جلب البيانات، حاول مرة أخرى.");
-    } finally {
-      setLoading(false);
+
+      if (!isAdmin && !isLoggedIn) {
+        return <p className="text-center text-red-500">جارٍ توجيهك إلى صفحة تسجيل الدخول...</p>;
+      }
     }
-  };
+    const fetchBookings = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          credentials: "include",
+        });
+        console.log("status : ", response.status)
+        if (!response.ok) {
+          setError("فشل في تحميل الحجوزات");
+        }
+        const data = await response.json();
+        setBookings(data);
+      } catch (err: any) {
+        setError("حدث خطأ أثناء جلب البيانات ، تعذر الاتصال بالسيرفر حاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkLogin
+    fetchBookings();
+  }, []);
+
 
   const handleCardClick = (data: Booking) => {
-    setSelectedBooking(data);
+      setSelectedBooking(data);
   };
 
-  const handleDelete = async (id: string) => {
-    //setLoading(true)
+  const handleDelete = async () => {
+    if (!selectedBooking) return;
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
+      const response = await fetch(`${API_URL}/${selectedBooking.id}`, {
+        method: "DELETE",
+        credentials: "include",
       });
-
+      const data = await response.json();
+      setBookings(data);
       if (response.status === 403) {
-        alert('ليس لديك صلاحية لحذف هذا الحجز');
+        alert("ليس لديك صلاحية لحذف هذا الحجز");
         return;
       }
-
       if (response.status === 401) {
         router.push("/Login");
       }
-      if (!response.ok) {
-        setError("فشل في تحميل الحجز")
-      }
 
-      const data = await response.json();
-      setBookings(data);
+      if (!response.ok) {
+        setError("فشل في حذف الحجز");
+      } else {
+        setLoading(true);
+        setLoading(false);
+      }
+      // تجديث القائمة بعد الحذف 
+      const updateBooking = bookings.filter(b => b.id !== selectedBooking.id);
+      setBookings(updateBooking);
+      setSelectedBooking(null);
     } catch (err: any) {
-      setError(err.message || "حدث خطأ أثناء جلب البيانات، حاول مرة أخرى.");
+      setError("حدث خطأ أثناء جلب البيانات،تعذر الاتصال بالسيرفر حاول مرة أخرى.");
     }
   };
-  useEffect(() => {
-    if (flag === true) {
-      console.log("fetch faild");
-      fetchBookings();
-    }
-  }, [flag])
+
+
 
   return (
     <div className="container mx-auto p-6">
@@ -113,12 +121,40 @@ const BookingData = () => {
                 <p className="text-gray-700"><strong>التاريخ:</strong> {data.date}</p>
                 <p className="text-gray-700"><strong>الوقت:</strong> {data.time}</p>
               </div>
-              <button
-                onClick={() => handleDelete(data.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              >
-                Delete
-              </button>
+              {/* زر حذف مع تأكيد */}
+              <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="mt-2"
+                    onClick={() => setSelectedBooking(data)}
+                  >
+                    حذف الحجز
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-md">
+                  <DialogTitle className="text-red-600">تأكيد الحذف</DialogTitle>
+                  <DialogDescription className="text-gray-600">
+                    هل أنت متأكد أنك تريد حذف الحجز للمريض <strong>{selectedBooking?.name}</strong>؟
+                    <br />
+                    <span className="text-sm text-red-500">⚠️ لا يمكن التراجع عن هذا الإجراء بعد التنفيذ.</span>
+                  </DialogDescription>
+
+                  <div className="flex justify-end space-x-2 mt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline">إلغاء</Button>
+                    </DialogClose>
+                    <Button
+                      variant="destructive"
+                      onClick={handleDelete}
+                      disabled={loading}
+                    >
+                      {loading ? "جاري الحذف..." : "تأكيد الحذف"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           ))}
         </div>
@@ -140,12 +176,9 @@ const BookingData = () => {
       )}
 
       <div className="flex items-center justify-center mt-8 me-8">
-        <button
-          onClick={fetchBookings}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-        >
+        <Button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
           تحديث القائمة
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ const LogoutButton = () => {
                 localStorage.removeItem("isLoggedIn"); // إزالة حالة تسجيل الدخول
                 localStorage.removeItem("userEmail"); // إزالة بيانات تسجيل الدخول
                 localStorage.removeItem("isAdmin"); // إزالة بيانات تسجيل الدخول
-                router.push("/Login");
+                window.location.reload();
             } else {
                 console.error("فشل تسجيل الخروج.");
             }

@@ -32,16 +32,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)  # <-- إضافة حقل يحدد إن كان المستخدم أدمن أم لا
 
-
-# ✅ نموذج المدير (Admin)
-
-# class Admin(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     #user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#     user = db.relationship('User', backref=db.backref('admin', lazy=True))
-
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    user = db.relationship('User', backref=db.backref('admin', uselist=False))
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,9 +55,44 @@ class Booking(db.Model):
 with app.app_context():
     db.create_all()
 
+    #إنشاء ادمن افتراضي عند تشغيل التطبيق لأول مرة
+    if not User.query.filter_by(email="admin@gmail.com").first():
+        hashed_password = generate_password_hash("qqqqqqqq", method='pbkdf2:sha256')
+        admin_user = User(email="admin@gmail.com", password=hashed_password, is_admin=True)
+        db.session.add(admin_user)
+        db.session.commit()
+
+        admin_account = Admin(user_id=admin_user.id)
+        db.session.add(admin_account)
+        db.session.commit()
 # ---- نقاط API ----
 
 
+# ✅ تسجيل دخول الأدمن
+@app.route('/api/login-admin', methods=['POST'])
+def login_admin():
+    data = request.get_json()
+    user = User.query.filter_by(email=data.get("email")).first()
+
+    # التحقق من صحة بيانات الأدمن
+    if user and user.is_admin and check_password_hash(user.password, data.get("password")):
+        session['id'] = user.id
+        session['email'] = user.email
+        session['is_admin'] = True # تخزين حالة الأدمن في الجلسة
+        session.modified = True
+
+        return jsonify({
+            "message": "تم تسجيل الدخول كأدمن بنجاح!",
+            "isAdmin": True,
+            "user": {
+                "id": user.id,
+                "email": user.email
+            }
+        }), 200
+
+    return jsonify({"error": "بيانات تسجيل الدخول غير صحيحة"}), 401
+
+#  التحقق من ان الأدمن مسجل دخول او لا
 @app.route('/api/check-admin', methods=['GET'])
 def check_admin():
     is_admin = session.get('is_admin', False)
@@ -117,22 +148,6 @@ def check_register():
     return jsonify({"registered": bool(user)}), 200
 
 
-# ✅تحقق من تسجيل الدخول
-@app.route('/api/check-login', methods=['GET'])
-def check_login():
-    id = session.get('id')
-    email = session.get('email')
-    if id:
-        return jsonify({
-            'isLoggedIn': True,
-            'user': {
-                'id': id,
-                'email': email,
-            }
-        }), 200
-    else:
-        return jsonify({'isLoggedIn': False}), 200
-
 
 # تسجيل الدحول
 @app.route('/api/login', methods=['POST'])
@@ -156,42 +171,33 @@ def login():
 
     return jsonify({'error': 'عذراً، لم يتم العثور على حساب بهذا البريد الإلكتروني. \n يرجى انشاء حساب جديد '}), 401
 
+# ✅تحقق من تسجيل الدخول
+@app.route('/api/check-login', methods=['GET'])
+def check_login():
+    id = session.get('id')
+    email = session.get('email')
+    if id:
+        return jsonify({
+            'isLoggedIn': True,
+            'user': {
+                'id': id,
+                'email': email,
+            }
+        }), 200
+    else:
+        return jsonify({'isLoggedIn': False}), 200
+
 # ✅ تسجيل الخروج
-
-
 @app.route('/api/logout', methods=['POST'])
 def logout():
-    session.permanent = False
     session.pop('id', None)
     session.pop('email', None)
+    session.pop('is_admin', None)
     session.modified = True
     session.clear()
     db.session.commit()  # حفظ التغييرات في قاعدة البيانات
+    
     return jsonify({'message': 'تم تسجيل الخروج بنجاح'}), 200
-
-
-# ✅ تسجيل دخول الأدمن
-
-@app.route('/api/login-admin', methods=['POST'])
-def login_admin():
-    data = request.get_json()
-
-    # بيانات الأدمن الثابتة
-    ADMIN_EMAIL = "admin@gmail.com"
-    ADMIN_PASSWORD = "qqqqqqqq"
-
-    # التحقق من صحة بيانات الأدمن
-    if data.get("email") == ADMIN_EMAIL and data.get("password") == ADMIN_PASSWORD:
-        session['is_admin'] = True  # تخزين حالة الأدمن في الجلسة
-        session['email'] = ADMIN_EMAIL
-        session.modified = True
-
-        return jsonify({
-            "message": "تم تسجيل الدخول كأدمن بنجاح!",
-            "isAdmin": True
-        }), 200
-
-    return jsonify({"error": "بيانات تسجيل الدخول غير صحيحة"}), 401
 
 
 # ✅ إنشاء حجز جديد
@@ -224,16 +230,22 @@ def create_booking():
 
     return jsonify({'message': 'تم إنشاء الحجز بنجاح!'}), 201
 
-# ✅ جلب جميع الحجوزات
 
+
+# ✅ جلب جميع الحجوزات
 
 @app.route('/api/get-bookings', methods=['GET'])
 def get_bookings():
-    print(session)
-    if 'id' not in session:
-        return jsonify({'error': 'غير مصرح به يرجى تسجيل الدخول اولا '}), 401
+    if 'id' not in session and not session.get('is_admin',False):
+        return jsonify({'error': 'غير مصرح به يرجى تسجيل الدخول أولًا'}), 401
 
-    bookings = Booking.query.filter_by(user_id=session['id']).all()
+    user = User.query.get(session['id'])
+
+    if user and user.is_admin:
+        bookings = Booking.query.all()  # جلب كل الحجوزات إذا كان المستخدم أدمن
+    else:
+        bookings = Booking.query.filter_by(user_id=user.id).all()  # جلب حجوزات المستخدم فقط
+
     return jsonify([{
         'id': booking.id,
         'name': booking.name,
@@ -245,8 +257,9 @@ def get_bookings():
         'doctor': booking.doctor
     } for booking in bookings]), 200
 
-# ✅ حذف حجز
 
+
+# ✅ حذف حجز
 
 @app.route('/api/get-bookings/<int:booking_id>', methods=['DELETE'])
 def delete_booking(booking_id):
