@@ -6,7 +6,6 @@ import HeaderMenu from "./HeaderMenu"
 import LogoutButton from '../LogoutButton';
 import MobileMenu from "./MobileMenu"
 import SearchBar from "./SearchBar"
-import { ListOrdered } from "lucide-react"
 import srcImage from "@/public/images/logo_D.png"
 import { useEffect, useState } from 'react';
 import { usePathname } from "next/navigation";
@@ -14,16 +13,21 @@ import { usePathname } from "next/navigation";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const pathname = usePathname(); // ملعرفة الصفحة الحالية
     // تجديث حالة تسجيل الدخول عند تحميل الصفحة 
     useEffect(() => {
         const isLoggedInStatus = localStorage.getItem("isLoggedIn") === "true";
+        const isAdminStatus = localStorage.getItem("isAdmin") === "true";
         setIsLoggedIn(isLoggedInStatus);
+        setIsAdmin(isAdminStatus)
     }, [])
     // تحديث isLoggined  عند تغيير الصفحة 
     useEffect(() => {
         const isLoggedInStatus = localStorage.getItem("isLoggedIn") === "true";
+        const isAdminStatus = localStorage.getItem("isAdmin") === "true";
         setIsLoggedIn(isLoggedInStatus);
+        setIsAdmin(isAdminStatus);
     }, [pathname])
 
 
@@ -32,7 +36,16 @@ const Header = () => {
             <div className={`bg-white border-b border-b-gray-400 pb-5`}>
                 <div className='px-11 pb-2 h-16 bg-blue-400 w-auto flex items-center justify-between gap-5'>
                     <SearchBar />
-                    <Link href="/Login" className='p-3 text-base font-sans font-semibold'>تسجيل الدخول</Link>
+                    {
+                        !isLoggedIn ? (
+                            <Link href="/Login" className='p-3 text-base font-sans font-semibold'>تسجيل الدخول</Link>
+                        ) : <></>
+                    }
+                    {
+                        isAdmin ? (
+                            <Link href="/dashboard" className='p-3 text-base font-sans font-semibold'> ادارة الحجوزات</Link>
+                        ): <></>
+                    }
                     <p className='text-base font-sans font-normal text-darkColor/80 flex-1'>24/7 أطباء متوفرون لمساعدتك</p>
 
                     <h1 className='text-base font-sans font-normal text-darkColor/90'>طبيبك صديقك راجع الطبيب الآن ...  <span className='text-black font-semibold'>عيادتنا معك أينما كنت</span> </h1>

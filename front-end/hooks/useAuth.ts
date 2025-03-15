@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +24,8 @@ export default function useAuth() {
                 const data2 = await response2.json();
 
                 console.log("login :", data.isLoggedIn);
-                console.log("login admin:", data2.isAdmin); setIsLoggedIn(data.isLoggedIn);
+                console.log("login admin:", data2.isAdmin);
+                setIsLoggedIn(data.isLoggedIn);
                 setIsAdmin(data2.isAdmin);
 
                 if (!data.isLoggedIn && !data2.isAdmin) {
@@ -37,7 +37,6 @@ export default function useAuth() {
                 setIsLoading(false);
             }
         };
-
         checkAuth();
     }, []);
 

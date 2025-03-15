@@ -200,6 +200,7 @@ def logout():
     return jsonify({'message': 'تم تسجيل الخروج بنجاح'}), 200
 
 
+
 # ✅ إنشاء حجز جديد
 @app.route('/api/bookings', methods=['POST'])
 def create_booking():
@@ -207,12 +208,21 @@ def create_booking():
     if 'id' not in session:
         return jsonify({'error': ' غير مصرح به يرجى تسجبل الدخول اولا'}), 401
 
-    print(data)
-    required_fields = ['name', 'email', 'date',
-                       'time', 'address', 'speciality', 'doctor']
+    required_fields = ['name', 'email', 'date','time', 'address', 'speciality', 'doctor']
 
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'يرجى ملء جميع الحقول'}), 400
+
+
+    # التحقق من وجود حجز بنفس الموعد لنفس المستخدم  
+    existing_booking = Booking.query.filter_by(  
+        user_id=session['id'], 
+        date=data['date'],  
+        time=data['time']  
+    ).first()  
+
+    if existing_booking:  
+        return jsonify({'error': 'لديك بالفعل حجز في هذا الموعد'}), 409  
 
     new_booking = Booking(
         user_id=session['id'],  # <-- ربط الحجز بالمستخدم المسجل
@@ -277,6 +287,36 @@ def delete_booking(booking_id):
     db.session.commit()
     return jsonify({'message': 'تم حذف الحجز بنجاح'}), 200
 
+# ✅ جلب جميع المرضى
+
+@app.route('/api/get-patients', methods=['GET'])
+def get_patients():
+    # التأكد من أن المستخدم أدمن
+    if not session.get('is_admin', False):
+        return jsonify({'error': 'غير مصرح به، انت لست مديرًا'}), 401
+
+    # جلب جميع المستخدمين الذين ليسوا إداريين
+    users = User.query.filter_by(is_admin=False).all()
+
+    return jsonify([
+        {'id': user.id, 'email': user.email}
+        for user in users
+    ]), 200
+# دالة لحذف المستخدم نهائيًا
+@app.route('/api/delete-patient/<int:patient_id>', methods=['DELETE'])
+def delete_patient(patient_id):
+    if not session.get('is_admin', False):
+        return jsonify({'error': 'غير مصرح به، انت لست مديرًا'}), 401
+
+    account_patients = User.query.filter_by(is_admin=False).all()
+    try:
+        db.session.delete(account_patients[patient_id])
+        db.session.commit()
+        session.modified = True
+        return jsonify({"message": "تم حذف المستخدم بنجاح"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": "حدث خطأ أثناء الحذف"}), 500
 
 # ✅ تشغيل التطبيق
 if __name__ == '__main__':

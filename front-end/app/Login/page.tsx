@@ -3,8 +3,8 @@ import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import "../SignUp/stylePage.css";
 import Link from 'next/link';
+import useAuth from "@/hooks/useAuth";
 
-const CHECK_LOGIN_URL = "http://localhost:5000/api/check-login"; // تحقق من الجلسة
 const Login = () => {
     const router = useRouter();
     const [password, setPassword] = useState<string>("");
@@ -14,8 +14,8 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const [errorCheckLoginStatus, setErrorCheckLoginStatus] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // حالة تسجيل الدخول
 
+    const { isLoggedIn } = useAuth();
     const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
         setErrorPassword(e.target.value.length < 8 ? "كلمة المرور يجب أن تكون على الأقل 8 أحرف." : "");
@@ -27,28 +27,14 @@ const Login = () => {
         setErrorEmail(!emailPattern.test(e.target.value) ? "البريد الإلكتروني غير صالح." : "")
     };
     const checkLoginStatus = async () => {
-        try {
-            const response = await fetch(CHECK_LOGIN_URL, {
-                method: "GET",
-                credentials: "include", // هام جدًا لإرسال ملفات تعريف الارتباط (Cookies)
-            });
-
-            const data = await response.json();
-            setIsLoggedIn(data.isLoggedIn);
-            console.log("data.isLoggedIn", data.isLoggedIn)
-            if (!data.isLoggedIn) {
-                setErrorCheckLoginStatus("");
-            } else {
-                setErrorCheckLoginStatus("المستخدم موجود بالفعل");
-                router.push("/");
-                return data.isLoggedIn;
-            }
-            return data.isLoggedIn;
-
-        } catch (err) {
-            setErrorCheckLoginStatus("حدث خطأ أثناء التحقق من حالة تسجيل الدخول يرجى المحاولة لاحقا. ");
-            return false;
+        if (!isLoggedIn) {
+            setErrorCheckLoginStatus("");
+        } else {
+            setErrorCheckLoginStatus("المستخدم موجود بالفعل");
+            router.push("/");
+            return isLoggedIn;
         }
+        return isLoggedIn;
     };
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -58,13 +44,11 @@ const Login = () => {
             setErrorMessage("يرجى ملء جميع الحقول.");
             return;
         }
-
         if (await checkLoginStatus()) {
             console.log(" You are already logged in .")
             return;
         }
         try {
-            // هون الغلط 
             //🔹 1. التحقق مما إذا كان البريد الإلكتروني مسجلاً أم لا
             const checkRegisterResponse = await fetch(`http://localhost:5000/api/check-register?email=${email}`, {
                 method: "GET",
@@ -121,7 +105,7 @@ const Login = () => {
                             onChange={handleEmailChange}
                             className={errorEmail ? "input-error" : ""}
                         />
-                        {errorEmail && <p className="error-message">{errorEmail}</p>}
+                        {errorEmail && <p className="text-red-500">{errorEmail}</p>}
 
                         <input
                             type="password"
@@ -131,7 +115,7 @@ const Login = () => {
                             onChange={handlePasswordChange}
                             className={errorPassword ? "input-error" : ""}
                         />
-                        {errorPassword && <p className="error-message">{errorPassword}</p>}
+                        {errorPassword && <p className="text-red-500">{errorPassword}</p>}
 
                         <p className="text-darkColor/55 pt-2">هل نسيت كلمة السر ؟ </p>
                         <button
@@ -140,9 +124,9 @@ const Login = () => {
                         >
                             تسجيل الدخول
                         </button>
-                        {errorMessage && <p className="error-message py-3 text-center">{errorMessage}</p>}
+                        {errorMessage && <p className="text-red-500 py-3 text-center">{errorMessage}</p>}
                         {successMessage && <p className="success-message py-3 text-center">{successMessage}</p>}
-                        {errorCheckLoginStatus && <p className="error-message py-3 text-center">{errorCheckLoginStatus}</p>}
+                        {errorCheckLoginStatus && <p className="text-red-500 py-3 text-center">{errorCheckLoginStatus}</p>}
                         <Link href="/admin">هل انت المدير ؟</Link>
                     </form>
                 </div>

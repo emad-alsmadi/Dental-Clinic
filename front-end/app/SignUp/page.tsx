@@ -3,8 +3,8 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import "./stylePage.css";
 import { useRouter } from "next/navigation";
+import useCheckRegister from "@/hooks/useCheckRegister";
 
-const CHECK_REGISTER_URL = "http://localhost:5000/api/check-register"; // تحقق من الجلسة
 const SignUp = () => {
 
     const router = useRouter()
@@ -19,9 +19,9 @@ const SignUp = () => {
     const [accept, setAccept] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorCheckRegisterStatus, setErrorCheckRegisterStatus] = useState("");
-    const [isRegister, setIsRegister] = useState(true); // حالة تسجيل الدخول
 
+    const { checkRegisterStatus, error, isRegisterd } = useCheckRegister();
+    
     const handleUserNameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
     };
@@ -49,37 +49,6 @@ const SignUp = () => {
         }
     };
 
-    const checkRegisterStatus = async () => {
-        setErrorCheckRegisterStatus("");
-        if (!email) {
-            setErrorCheckRegisterStatus("يرجى إدخال البريد الإلكتروني للتحقق.");
-            return;
-        }
-        try {
-            const response = await fetch(`${CHECK_REGISTER_URL}?email=${encodeURIComponent(email)}`, {
-                method: "GET",
-                credentials: "include", // لإرسال الكوكيز
-            });
-
-            if (!response) {
-                throw new Error("فشل التحقق من التسجيل");
-            }
-
-            const data = await response.json();
-
-            if (data.registered) {
-                setErrorCheckRegisterStatus("المستخدم مسجل بالفعل");
-                setIsRegister(true);
-                router.push("/");
-                return;
-            }
-            setErrorCheckRegisterStatus("");
-            setIsRegister(false);
-        } catch (err) {
-            console.log("The Error", err);
-            setErrorCheckRegisterStatus("حدث خطأ أثناء التحقق من حالة التسجيل، يرجى المحاولة لاحقاً.");
-        }
-    };
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSuccessMessage("")
@@ -90,14 +59,17 @@ const SignUp = () => {
             return;
         }
         if (password !== passwordR) {
-            e.preventDefault(); ``
+            e.preventDefault();
             setErrorPassword("كلمة المرور غير متطابقة");
             return;
         }
 
-        await checkRegisterStatus(); // 🔹 انتظر نتيجة التحقق أولاً
-
-
+        const userExists = await checkRegisterStatus(email);
+        console.log("userExists :      ", userExists);
+        if (userExists.registered) {
+            //router.push("/Login")
+            return;
+        }
         console.log("hhhhhh no")
         try {
             const response = await fetch("http://localhost:5000/api/register", {
@@ -120,11 +92,10 @@ const SignUp = () => {
         }
     };
 
-
     return (
-        <div className="flex justify-center align-content-center mb-20 mt-8">
+        <div className="flex justify-center align-content-center mb-10 mt-8">
             <div className="bg-white/70 rounded-lg shadow-lg relative overflow-hidden w-96 min-h-96">
-                <div className="mt-20">
+                <div className="mt-10">
                     <form className="flex flex-col items-center justify-center px-12" onSubmit={handleSubmit}>
                         <h1 className="text-2xl text-black/50 font-black tracking-wider mb-5">التسجيل</h1>
 
@@ -135,9 +106,9 @@ const SignUp = () => {
                             required
                             value={username}
                             onChange={handleUserNameChange}
-                            className={errorUsername ? "input-error" : ""}
+                            className={errorUsername ? "border border-red-500" : ""}
                         />
-                        {errorUsername && <p className="error-message">{errorUsername}</p>}
+                        {errorUsername && <p className="text-red-500">{errorUsername}</p>}
 
                         <input
                             type="email"
@@ -145,11 +116,11 @@ const SignUp = () => {
                             name="email"
                             value={email}
                             onChange={handleEmailChange}
-                            className={errorEmail ? "input-error" : ""}
+                            className={errorEmail ? "border border-red-500" : ""}
                         />
-                        {errorEmail && <p className="error-message">{errorEmail}</p>}
+                        {errorEmail && <p className="text-red-500">{errorEmail}</p>}
                         {errorEmailStatus === 422 && accept && (
-                            <p className="error-message">البريد الإلكتروني مستخدم بالفعل.</p>
+                            <p className="text-red-500">البريد الإلكتروني مستخدم بالفعل.</p>
                         )}
 
                         <input
@@ -158,9 +129,9 @@ const SignUp = () => {
                             name="password"
                             value={password}
                             onChange={handlePasswordChange}
-                            className={errorPassword ? "input-error" : ""}
+                            className={errorPassword ? "border border-red-500" : ""}
                         />
-                        {errorPassword && <p className="error-message">{errorPassword}</p>}
+                        {errorPassword && <p className="text-red-500">{errorPassword}</p>}
 
                         <input
                             type="password"
@@ -168,19 +139,19 @@ const SignUp = () => {
                             name="password_confirmation"
                             value={passwordR}
                             onChange={handlePasswordRChange}
-                            className={passwordR !== password && accept ? "input-error" : ""}
+                            className={passwordR !== password && accept ? "border border-red-500" : ""}
                         />
                         {passwordR !== password && accept && (
-                            <p className="error-message">كلمة المرور غير متطابقة.</p>
+                            <p className="text-red-500">كلمة المرور غير متطابقة.</p>
                         )}<button
                             type="submit"
                             className="bg-blue-600 text-xs font-bold border-none hover:text-darkColor outline-none tracking-wider my-5 uppercase duration-700 w-40 py-3 text-white/90 rounded-lg"
                         >
                             التسجيل
                         </button>
-                        {errorMessage && <p className="error-message py-3">{errorMessage}</p>}
-                        {successMessage && <p className="success-message py-3">{successMessage}</p>}
-                        {errorCheckRegisterStatus && <p className="error-message py-3 text-lg">{errorCheckRegisterStatus}</p>}
+                        {errorMessage && <p className="text-red-500 py-3 text-center">{errorMessage}</p>}
+                        {successMessage && <p className="success-message py-3 text-center">{successMessage}</p>}
+                        {error && <p className="text-red-500 py-3 text-lg text-center">{error}</p>}
                     </form>
 
                 </div>

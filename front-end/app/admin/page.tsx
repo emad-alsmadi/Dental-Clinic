@@ -39,37 +39,33 @@ const pageAdmin = () => {
             setErrorMessage("يرجى ملء جميع الحقول.");
             return;
         }
-        if (!isAdmin) {
-            setErrorCheckLoginStatus(" انت لست مدير");
-
-        } else {
-            setErrorCheckLoginStatus("");
-            setSuccessMessage("تم التسجل بنجاح , اهلا بك ايها المدير") 
+        if (isAdmin) {
+            setErrorCheckLoginStatus(" انت مسجل دخول بالفعل");
             router.push("/");
-            return isAdmin;
-        }
-        try {
-            const loginAdminResponse = await fetch(LOGIN_ADMIN_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ email, password }),
-            });
+            return;
+        } else {
+            try {
+                const loginAdminResponse = await fetch(LOGIN_ADMIN_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ email, password }),
+                });
 
-            const data = await loginAdminResponse.json();
+                const data = await loginAdminResponse.json();
 
-            if (loginAdminResponse.ok) {
-                localStorage.setItem("adminEmail", email);
-                localStorage.setItem("isAdmin", "true"); // ✅ حفظ حالة الأدمن
-                localStorage.setItem("isLoggedIn", "true")
-
-                setSuccessMessage("تم تسجيل الدخول بنجاح");
-                router.push("/"); // ✅ توجيه المستخدم بعد تسجيل الدخول
-            } else {
-                setErrorMessage(data.error || "فشل تسجيل الدخول، تحقق من البيانات.");
+                if (loginAdminResponse.ok) {
+                    localStorage.setItem("adminEmail", email);
+                    localStorage.setItem("isAdmin", "true");
+                    localStorage.setItem("isLoggedIn", "true")
+                    setSuccessMessage("تم تسجيل الدخول بنجاح");
+                    router.push("/"); // ✅ توجيه المستخدم بعد تسجيل الدخول
+                } else {
+                    setErrorMessage("فشل تسجيل الدخول، تحقق من البيانات.");
+                }
+            } catch (err) {
+                setErrorMessage("حدث خطأ أثناء تسجيل الدخول");
             }
-        } catch (err) {
-            setErrorMessage("حدث خطأ أثناء تسجيل الدخول");
         }
     };
     return (
@@ -87,7 +83,7 @@ const pageAdmin = () => {
                                 onChange={handleEmailChange}
                                 className={errorEmail ? "input-error" : ""}
                             />
-                            {errorEmail && <p className="error-message">{errorEmail}</p>}
+                            {errorEmail && <p className="text-red-500">{errorEmail}</p>}
 
                             <input
                                 type="password"
@@ -97,7 +93,7 @@ const pageAdmin = () => {
                                 onChange={handlePasswordChange}
                                 className={errorPassword ? "input-error" : ""}
                             />
-                            {errorPassword && <p className="error-message">{errorPassword}</p>}
+                            {errorPassword && <p className="text-red-500">{errorPassword}</p>}
 
                             <p className="text-darkColor/55 pt-2">هل نسيت كلمة السر ؟ </p>
                             <button
@@ -106,9 +102,9 @@ const pageAdmin = () => {
                             >
                                 تسجيل الدخول
                             </button>
-                            {errorMessage && <p className="error-message py-3 text-center">{errorMessage}</p>}
-                            {successMessage && <p className="success-message py-3 text-center">{successMessage}</p>}
-                            {errorCheckLoginStatus && <p className="error-message py-3 text-center">{errorCheckLoginStatus}</p>}
+                            {errorMessage && <p className="text-red-500 py-3 text-center">{errorMessage}</p>}
+                            {successMessage && <p className="text-green-600 py-3 text-center">{successMessage}</p>}
+                            {errorCheckLoginStatus && <p className="text-red-500 py-3 text-center">{errorCheckLoginStatus}</p>}
                         </form>
                     </div>
                 </div>
@@ -116,4 +112,4 @@ const pageAdmin = () => {
         </div>
     );
 }
-export default pageAdmin
+export default pageAdmin;

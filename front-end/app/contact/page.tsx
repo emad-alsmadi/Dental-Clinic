@@ -8,6 +8,7 @@ const ContactPage = () => {
   return (
     <div className="bg-gray-100 py-12">
       <Container>
+
         <div className="bg-white p-8 rounded-lg shadow-lg">
           <div className="text-center mb-8">
             <Image

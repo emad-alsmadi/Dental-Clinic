@@ -29,7 +29,7 @@ const Booking = () => {
         speciality: "",
         doctor: "",
     });
-    const { isLoading, isLoggedIn ,isAdmin } = useAuth();
+    const { isLoading, isLoggedIn, isAdmin } = useAuth();
 
     if (isLoading) return <p className="flex items-kfcenter justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
 
@@ -48,6 +48,7 @@ const Booking = () => {
         e.preventDefault();
         setLoading(true);
         setError("");
+        setIsBooked(false);
         try {
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -59,8 +60,10 @@ const Booking = () => {
             if (!response) {
                 setError("حدث خطأ أثناء إرسال البيانات!");  // إضافة  لتجنب حدوث خطأ إذا كانت result.error غير موجودة
             }
-
-            alert("تم حجز الموعد بنجاح!");
+            if (response.status === 409) {
+                setError("لديك بالفعل حجز في هذا الموعد");
+                return;
+            }
             setFormData({
                 name: "",
                 email: "",

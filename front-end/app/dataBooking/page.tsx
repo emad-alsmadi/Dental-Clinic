@@ -18,7 +18,7 @@ interface Booking {
 
 const API_URL = "http://localhost:5000/api/get-bookings";
 
-const BookingData: React.FC= () => {
+const BookingData: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,15 +28,9 @@ const BookingData: React.FC= () => {
   const router = useRouter();
 
   useEffect(() => {
-    const checkLogin = () => {
-      if (isLoading) {
-        return <p className="flex items-center justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
-      }
+    if (isLoading) return;
 
-      if (!isAdmin && !isLoggedIn) {
-        return <p className="text-center text-red-500">جارٍ توجيهك إلى صفحة تسجيل الدخول...</p>;
-      }
-    }
+    if (!isAdmin && !isLoggedIn) return;
     const fetchBookings = async () => {
       setLoading(true);
       setError("");
@@ -57,13 +51,13 @@ const BookingData: React.FC= () => {
         setLoading(false);
       }
     };
-    checkLogin
+
     fetchBookings();
-  }, []);
+  }, [isLoading, isLoggedIn, isAdmin]);
 
 
   const handleCardClick = (data: Booking) => {
-      setSelectedBooking(data);
+    setSelectedBooking(data);
   };
 
   const handleDelete = async () => {
@@ -99,89 +93,101 @@ const BookingData: React.FC= () => {
   };
 
 
-
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="flex justify-center text-4xl font-bold my-10 text-right">عرض الحجوزات</h1>
+    <>
+      {isLoading ? (
+        <p className="flex items-center justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>
+      ): (
+      <div className="container mx-auto p-6">
+        <h1 className="flex justify-center text-4xl font-bold my-10 text-right">عرض الحجوزات</h1 >
 
-      {loading && <p className="text-gray-700 text-center">جاري تحميل الحجوزات...</p>}
-      {error && <p className="text-red-500 text-center">{error}</p>}
+        {loading && <p className="text-gray-700 text-center">جاري تحميل الحجوزات...</p>
+        }
+        {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {!loading && !error && bookings.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bookings.map((data) => (
-            <div
-              key={data.id}
-              className="bg-white shadow-md rounded-lg p-6 cursor-pointer hover:shadow-lg transition-shadow text-right"
-              onClick={() => handleCardClick(data)}
-            >
-              <div>
-                <h2 className="text-xl font-bold mb-2">{data.name}</h2>
-                <p className="text-gray-700"><strong>البريد الإلكتروني:</strong> {data.email}</p>
-                <p className="text-gray-700"><strong>التاريخ:</strong> {data.date}</p>
-                <p className="text-gray-700"><strong>الوقت:</strong> {data.time}</p>
-              </div>
-              {/* زر حذف مع تأكيد */}
-              <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    className="mt-2"
-                    onClick={() => setSelectedBooking(data)}
-                  >
-                    حذف الحجز
-                  </Button>
-                </DialogTrigger>
-
-                <DialogContent className="max-w-md">
-                  <DialogTitle className="text-red-600">تأكيد الحذف</DialogTitle>
-                  <DialogDescription className="text-gray-600">
-                    هل أنت متأكد أنك تريد حذف الحجز للمريض <strong>{selectedBooking?.name}</strong>؟
-                    <br />
-                    <span className="text-sm text-red-500">⚠️ لا يمكن التراجع عن هذا الإجراء بعد التنفيذ.</span>
-                  </DialogDescription>
-
-                  <div className="flex justify-end space-x-2 mt-4">
-                    <DialogClose asChild>
-                      <Button variant="outline">إلغاء</Button>
-                    </DialogClose>
-                    <Button
-                      variant="destructive"
-                      onClick={handleDelete}
-                      disabled={loading}
-                    >
-                      {loading ? "جاري الحذف..." : "تأكيد الحذف"}
-                    </Button>
+        {
+          !loading && !error && bookings.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {bookings.map((data) => (
+                <div
+                  key={data.id}
+                  className="bg-white shadow-md rounded-lg p-6 cursor-pointer hover:shadow-lg transition-shadow text-right"
+                  onClick={() => handleCardClick(data)}
+                >
+                  <div>
+                    <h2 className="text-xl font-bold mb-2">{data.name}</h2>
+                    <p className="text-gray-700"><strong>البريد الإلكتروني:</strong> {data.email}</p>
+                    <p className="text-gray-700"><strong>التاريخ:</strong> {data.date}</p>
+                    <p className="text-gray-700"><strong>الوقت:</strong> {data.time}</p>
                   </div>
-                </DialogContent>
-              </Dialog>
+                  {/* زر حذف مع تأكيد */}
+                  <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedBooking(null)}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        className="mt-2"
+                        onClick={() => setSelectedBooking(data)}
+                      >
+                        حذف الحجز
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="max-w-md">
+                      <DialogTitle className="text-red-600">تأكيد الحذف</DialogTitle>
+                      <DialogDescription className="text-gray-600">
+                        هل أنت متأكد أنك تريد حذف الحجز للمريض <strong>{selectedBooking?.name}</strong>؟
+                        <br />
+                        <span className="text-sm text-red-500">⚠️ لا يمكن التراجع عن هذا الإجراء بعد التنفيذ.</span>
+                      </DialogDescription>
+
+                      <div className="flex justify-end space-x-2 mt-4">
+                        <DialogClose asChild>
+                          <Button variant="outline">إلغاء</Button>
+                        </DialogClose>
+                        <Button
+                          variant="destructive"
+                          onClick={handleDelete}
+                          disabled={loading}
+                        >
+                          {loading ? "جاري الحذف..." : "تأكيد الحذف"}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : (
-        !loading && <p className="text-gray-700 text-center">لا توجد حجوزات متاحة</p>
-      )}
+          ) : (
+            !loading && <p className="text-gray-700 text-center">لا توجد حجوزات متاحة</p>
+          )
+        }
 
-      {selectedBooking && (
-        <div className="mt-6 bg-white shadow-md rounded-lg p-6 text-right">
-          <h2 className="text-xl font-bold mb-4">تفاصيل الحجز</h2>
-          <p className="text-gray-700 mb-2"><strong>الاسم:</strong> {selectedBooking.name}</p>
-          <p className="text-gray-700 mb-2"><strong>البريد الإلكتروني:</strong> {selectedBooking.email}</p>
-          <p className="text-gray-700 mb-2"><strong>التاريخ:</strong> {selectedBooking.date}</p>
-          <p className="text-gray-700 mb-2"><strong>الوقت:</strong> {selectedBooking.time}</p>
-          <p className="text-gray-700 mb-2"><strong>العنوان:</strong> {selectedBooking.address}</p>
-          <p className="text-gray-700 mb-2"><strong>التخصص:</strong> {selectedBooking.speciality}</p>
-          <p className="text-gray-700"><strong>الطبيب:</strong> {selectedBooking.doctor}</p>
-        </div>
-      )}
+        {
+          selectedBooking && (
+            <div className="mt-6 bg-white shadow-md rounded-lg p-6 text-right">
+              <h2 className="text-xl font-bold mb-4">تفاصيل الحجز</h2>
+              <p className="text-gray-700 mb-2"><strong>الاسم:</strong> {selectedBooking.name}</p>
+              <p className="text-gray-700 mb-2"><strong>البريد الإلكتروني:</strong> {selectedBooking.email}</p>
+              <p className="text-gray-700 mb-2"><strong>التاريخ:</strong> {selectedBooking.date}</p>
+              <p className="text-gray-700 mb-2"><strong>الوقت:</strong> {selectedBooking.time}</p>
+              <p className="text-gray-700 mb-2"><strong>العنوان:</strong> {selectedBooking.address}</p>
+              <p className="text-gray-700 mb-2"><strong>التخصص:</strong> {selectedBooking.speciality}</p>
+              <p className="text-gray-700"><strong>الطبيب:</strong> {selectedBooking.doctor}</p>
+            </div>
+          )
+        }
 
-      <div className="flex items-center justify-center mt-8 me-8">
-        <Button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-          تحديث القائمة
-        </Button>
-      </div>
-    </div>
+        <div className="flex items-center justify-center mt-8 me-8">
+          <Button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+            تحديث القائمة
+          </Button>
+        </div>
+      </div >
+      )
+      }
+    </>
   );
 };
 
 export default BookingData;
+<p className="flex items-center justify-center my-36">جارٍ التحقق من تسجيل الدخول...</p>;
