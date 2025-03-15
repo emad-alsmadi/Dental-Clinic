@@ -26,8 +26,8 @@ const Dashboard = () => {
                 <div className="flex font-sans">
                     {/* الشريط الجانبي */}
                     <aside className="w-64 bg-gray-900 text-white p-4 min-h-screen">
-                        <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
-                        <ul className="space-y-4">
+                        <h2 className="text-2xl font-bold mb-10 mt-2 cursor-pointer" onClick={() => setActiveTab(undefined)}>Admin Dashboard</h2>
+                        <ul className="space-y-12">
                             <li className="hover:text-gray-300  cursor-pointer" onClick={() => setActiveTab("appointments")}>
                                 Appointments Dashboard
                             </li>
@@ -45,7 +45,7 @@ const Dashboard = () => {
                     <main className="flex-1 p-6 bg-gray-100">
                         {/* الشريط العلوي */}
                         <header className="flex justify-between items-center bg-white p-4 shadow-md mb-6 rounded-lg">
-                            <h1 className="text-xl font-semibold">Dashboard</h1>
+                                <h1 className="text-xl font-semibold">{activeTab || "Admin Dashboard"}</h1>
                             <div className="flex items-center space-x-4">
                                 <Bell className="w-6 h-6 text-gray-600" />
                                 <Calendar className="w-6 h-6 text-gray-600" />
@@ -56,26 +56,32 @@ const Dashboard = () => {
                         <div className="grid grid-cols-3 gap-4 mb-6">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Stable Patients</CardTitle>
+                                    <CardTitle>Stable {activeTab || ""}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="text-3xl font-bold">22</CardContent>
                             </Card>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Good Patients</CardTitle>
+                                    <CardTitle>Good {activeTab || ""}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="text-3xl font-bold">12</CardContent>
                             </Card>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Critical Patients</CardTitle>
+                                    <CardTitle>Critical {activeTab || ""}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="text-3xl font-bold">2</CardContent>
                             </Card>
                         </div>
 
                         {/* جدول المواعيد */}
-                        {activeTab === "appointments" ? <AppointmentsTable /> : <PatientsTable />}
+                        {
+                            activeTab === "appointments" ?
+                                <AppointmentsTable />
+                                : activeTab === "patients" ?
+                                    <PatientsTable />
+                                    : <></>
+                        }
                     </main >
                 </div >
             )}
