@@ -73,7 +73,8 @@ const Dashboard = () => {
                                 <CardContent className="text-3xl font-bold">2</CardContent>
                             </Card>
                         </div>
-
+                        {/* المخططات */}
+                            
                         {/* جدول المواعيد */}
                         {
                             activeTab === "appointments" ?

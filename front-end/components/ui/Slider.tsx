@@ -1,11 +1,11 @@
 'use client'
 import Image from 'next/image'
 import { useState, useEffect } from 'react';
-import image2 from '../../public/images/dental-clinic2.png'
-import image3 from '../../public/images/dental-clinic3.png'
-import image4 from '../../public/images/dental-clinic4.png'
-import image5 from '../../public/images/dental-clinic5.png'
-import image6 from '../../public/images/dental-clinic6.png'
+import image2 from '../../public/images/dental-clinic2.png';
+import image3 from '../../public/images/dental-clinic3.png';
+import image4 from '../../public/images/dental-clinic4.png';
+import image5 from '../../public/images/dental-clinic5.png';
+import image6 from '../../public/images/dental-clinic6.png';
 
 const images = [
     image2,

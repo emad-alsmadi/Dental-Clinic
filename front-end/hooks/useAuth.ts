@@ -11,24 +11,23 @@ export default function useAuth() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/check-login", {
+                const response2 = await fetch("http://localhost:5000/api/check-login", {
                     method: "GET",
                     credentials: "include",
                 });
-                const response2 = await fetch("http://localhost:5000/api/check-admin", {
+                const response3 = await fetch("http://localhost:5000/api/check-admin", {
                     method: "GET",
                     credentials: "include",
                 });
 
-                const data = await response.json();
                 const data2 = await response2.json();
+                const data3 = await response3.json();
+                console.log("login :", data2.isLoggedIn);
+                console.log("login admin:", data3.isAdmin);
+                setIsLoggedIn(data2.isLoggedIn);
+                setIsAdmin(data3.isAdmin);
 
-                console.log("login :", data.isLoggedIn);
-                console.log("login admin:", data2.isAdmin);
-                setIsLoggedIn(data.isLoggedIn);
-                setIsAdmin(data2.isAdmin);
-
-                if (!data.isLoggedIn && !data2.isAdmin) {
+                if (!data2.isLoggedIn && !data3.isAdmin) {
                     router.push("/Login"); // توجيه المستخدم إلى صفحة تسجيل الدخول إذا لم يكن مسجلاً
                 }
             } catch (error) {
@@ -40,5 +39,5 @@ export default function useAuth() {
         checkAuth();
     }, []);
 
-    return { isLoading, isLoggedIn, isAdmin };
+    return {isLoading, isLoggedIn, isAdmin };
 }

@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import "./stylePage.css";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,9 @@ const SignUp = () => {
     const [email, setEmail] = useState<string>("");
     const [errorUsername, setErrorUsername] = useState("");
     const [errorPassword, setErrorPassword] = useState<string>("");
+
+    const [correctPassword, setCorrectPassword] = useState<boolean>(true);
+    const [correctEmail, setCorrectEmail] = useState<boolean>(true);
     const [errorEmail, setErrorEmail] = useState<string>("");
     const [errorEmailStatus, setErrorEmailStatus] = useState<number>(0);
     const [accept, setAccept] = useState<boolean>(false);
@@ -30,8 +33,10 @@ const SignUp = () => {
         setPassword(e.target.value);
         if (e.target.value.length < 8) {
             setErrorPassword("كلمة المرور يجب أن تكون على الأقل 8 أحرف.");
+            setCorrectPassword(false);
         } else {
             setErrorPassword("");
+            setCorrectPassword(true);
         }
     };
 
@@ -44,33 +49,35 @@ const SignUp = () => {
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailPattern.test(e.target.value)) {
             setErrorEmail("البريد الإلكتروني غير صالح.");
+            setCorrectEmail(false);
         } else {
             setErrorEmail("");
+            setCorrectEmail(true);
         }
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSuccessMessage("")
-        setErrorPassword("")
         setErrorMessage("");
         if (!username || !password || !passwordR || !email) {
             setErrorMessage("يرجى ملء جميع الحقول.");
             return;
         }
         if (password !== passwordR) {
-            e.preventDefault();
             setErrorPassword("كلمة المرور غير متطابقة");
             return;
         }
+        if (!correctEmail || !correctPassword) {
+            return;
+        } else {
+            setErrorPassword("");
+            setErrorEmail("");
+        }
 
         const userExists = await checkRegisterStatus(email);
-        console.log("userExists :      ", userExists);
-        if (userExists.registered) {
-            //router.push("/Login")
-            return;
-        }
-        console.log("hhhhhh no")
+    
+        if (userExists.registered) return;
         try {
             const response = await fetch("http://localhost:5000/api/register", {
                 method: "POST",
@@ -80,15 +87,15 @@ const SignUp = () => {
             });
             if (response.status === 201) {
                 setSuccessMessage("تم التسجيل بنجاح")
-                localStorage.setItem("userEmail", email); // 🔹 حفظ الإيميل
+                localStorage.setItem("userEmail", email);
                 localStorage.setItem("isLoggedIn", "true")
-                router.push("/"); // 🔹 توجيه المستخدم إلى صفحة الحجز
+                router.push("/");
             } else {
                 const errorData = await response.json();
-                Error(errorData.error || "حدث خطأ أثناء التسجيل");
+                setErrorMessage("حدث خطأ أثناء التسجيل");
             }
         } catch (error) {
-            Error("حدث خطأ في الاتصال بالسيرفر");
+            setErrorMessage("حدث خطأ في الاتصال بالسيرفر");
         }
     };
 
@@ -145,15 +152,15 @@ const SignUp = () => {
                             <p className="text-red-500">كلمة المرور غير متطابقة.</p>
                         )}<button
                             type="submit"
-                            className="bg-blue-600 text-xs font-bold border-none hover:text-darkColor outline-none tracking-wider my-5 uppercase duration-700 w-40 py-3 text-white/90 rounded-lg"
+                            className="bg-blue-600 text-xs font-bold border-none hover:text-darkColor outline-none tracking-wider my-3 uppercase duration-700 w-40 py-3 text-white/90 rounded-lg"
                         >
                             التسجيل
                         </button>
+                        <p className=" mb-5">لديك حساب على اودينتل ؟ <Link href="/Login" className="text-blue-800">تسجيل دخول</Link></p>
                         {errorMessage && <p className="text-red-500 py-3 text-center">{errorMessage}</p>}
                         {successMessage && <p className="success-message py-3 text-center">{successMessage}</p>}
                         {error && <p className="text-red-500 py-3 text-lg text-center">{error}</p>}
                     </form>
-
                 </div>
             </div>
         </div>

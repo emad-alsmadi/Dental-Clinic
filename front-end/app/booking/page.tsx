@@ -132,12 +132,12 @@ const Booking = () => {
                         <label htmlFor="doctor" className="block text-gray-700">الطبيب</label>
                         <select id="doctor" value={formData.doctor} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" >
                             <option value="">اختر الطبيب</option>
-                            <option value="د. سميث">د. سميث</option>
+                            <option value="د. سميث">د. رامي بلال</option>
                             <option value="د. عماد الصمادي">د. عماد الصمادي</option>
-                            <option value="د. مريم ابراهيم">د. مريم ابراهيم</option>
+                            <option value="د. مريم ابراهيم">د. حسان إبراهيم</option>
                             <option value="د. جابر مخلالاتي">د. جابر مخلالاتي</option>
                             <option value="د. غازي حمدان">د. غازي حمدان</option>
-                            <option value="د. جونز">د. جونز</option>
+                            <option value="د. جونز">د. سمير الخالد</option>
                         </select>
                     </div>
 

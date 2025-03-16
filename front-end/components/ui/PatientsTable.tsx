@@ -100,7 +100,7 @@ const PatientsTable = () => {
                         <DialogContent className="max-w-md">
                           <DialogTitle className="text-red-600">تأكيد الحذف</DialogTitle>
                           <DialogDescription className="text-gray-600">
-                            هل أنت متأكد أنك تريد حذف الحجز للمريض هذا
+                            هل أنت متأكد أنك تريد حذف حساب المريض هذا
                             <br />
                             <span className="text-sm text-red-500">⚠️ لا يمكن التراجع عن هذا الإجراء بعد التنفيذ.</span>
                           </DialogDescription>

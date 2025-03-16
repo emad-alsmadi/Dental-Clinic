@@ -1,49 +1,54 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { User, Stethoscope, Clock } from "lucide-react";
 import { doctors } from "@/constants/doctors";
 
 const Doctors = () => {
-
     const [flipped, setFlipped] = useState<{ [key: number]: boolean }>({});
 
     const handleHover = (id: number) => {
-        setFlipped((prev) => ({ ...prev, [id]: true }));
-        setTimeout(() => {
-            setFlipped((prev) => ({ ...prev, [id]: false }));
-        }, 1500);
+        setFlipped((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     return (
-        <div className="container mx-auto py-10">
-            <h1 className="text-3xl font-bold text-center text-blue-700 mb-10">
+        <div className="container mx-auto py-16 px-6">
+            <h1 className="text-4xl font-extrabold text-center text-blue-700 mb-12">
                 👨‍⚕️ قائمة الأطباء
             </h1>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {doctors.map((doctor) => (
-                    <div
+                    <motion.div
                         key={doctor.id}
-                        className="bg-white shadow-lg rounded-lg overflow-hidden transform transition duration-500 hover:scale-105"
+                        whileHover={{ scale: 1.05 }}
+                        className="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300"
                     >
                         <div
-                            className="relative w-full h-64"
+                            className="relative w-full h-64 cursor-pointer"
                             onMouseEnter={() => handleHover(doctor.id)}
+                            onMouseLeave={() => handleHover(doctor.id)}
                         >
-                            <Image
-                                src={flipped[doctor.id] ? doctor.imageBack : doctor.imageFront}
-                                //src={doctor.imageFront}
-                                alt={doctor.name}
-                                layout="fill"
-                                objectFit="cover"
-                                className={`transition - transform duration-1000 ${flipped[doctor.id] ? "rotate-y-180" : "rotate-y-0"}`}
-                            />
+                            <motion.div
+                                initial={false}
+                                animate={{ rotateY: flipped[doctor.id] ? 360 : 0 }}
+                                transition={{ duration: 0.6 }}
+                                className="absolute inset-0 w-full h-full"
+                                style={{ backfaceVisibility: "hidden" }}
+                            >
+                                <Image
+                                    src={flipped[doctor.id] ? doctor.imageBack : doctor.imageFront}
+                                    alt={doctor.name}
+                                    layout="fill"
+                                    objectFit="cover"
+                                    className="rounded-t-xl"
+                                />
+                            </motion.div>
                         </div>
 
-                        <div className="p-5 text-center">
-                            <h2 className="text-xl font-bold text-gray-800 flex justify-center items-center gap-2">
+                        <div className="p-6 text-center">
+                            <h2 className="text-2xl font-semibold text-gray-800 flex justify-center items-center gap-2">
                                 <User className="text-blue-500" /> {doctor.name}
                             </h2>
                             <p className="text-gray-600 mt-2 flex justify-center items-center gap-2">
@@ -53,7 +58,7 @@ const Doctors = () => {
                                 <Clock className="text-red-500" /> {doctor.experience}
                             </p>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </div>
