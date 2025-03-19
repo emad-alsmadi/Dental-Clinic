@@ -19,12 +19,11 @@ const useCheckRegister = () => {
             }
             const data = await respons.json();
             if (data.registered) {
-                console.log("data.registerd is reggggggggggggggg");
+                
                 setError(" هذا البريد الألكتروني مسجل بالفعل , يرجى تسجيل الدخول بدلا من ذلك . ");
                 setIsRegisterd(true)
             } else {
                 setIsRegisterd(false)
-                console.log("data.registerd is notttt reggggggggggggggg");
             }
             return data;
         } catch (err: any) {

@@ -28,7 +28,7 @@ export default function useAuth() {
                 setIsAdmin(data3.isAdmin);
 
                 if (!data2.isLoggedIn && !data3.isAdmin) {
-                    router.push("/Login"); // توجيه المستخدم إلى صفحة تسجيل الدخول إذا لم يكن مسجلاً
+                    router.push("/auth/login"); // توجيه المستخدم إلى صفحة تسجيل الدخول إذا لم يكن مسجلاً
                 }
             } catch (error) {
                 console.error("خطأ في التحقق من الجلسة:", error);

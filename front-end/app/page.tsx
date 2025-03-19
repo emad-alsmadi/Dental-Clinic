@@ -8,9 +8,6 @@ const Home = () => {
   return (
     <div>
       <HomeBanner />
-      <Container className="py-10">
-        <About />
-      </Container>
     </div>
   );
 }

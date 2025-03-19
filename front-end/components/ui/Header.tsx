@@ -38,7 +38,7 @@ const Header = () => {
                     <SearchBar />
                     {
                         !isLoggedIn ? (
-                            <Link href="/Login" className='p-3 text-base font-sans font-semibold'>تسجيل الدخول</Link>
+                            <Link href="/auth/login" className='p-3 text-base font-sans font-semibold'>تسجيل الدخول</Link>
                         ) : <></>
                     }
                     {
@@ -54,8 +54,8 @@ const Header = () => {
                     <div className="w-auto flex items-center justify-end gap-5">
                         {!isLoggedIn ? (
                             <>
-                                <Link href="/SignUp" className="bg-blue-400 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">اشتراك</Link>
-                                <Link href="/Login" className="bg-emerald-500 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">تسجيل الدخول</Link>
+                                <Link href="/auth/sign-up" className="bg-blue-400 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">اشتراك</Link>
+                                <Link href="/auth/login" className="bg-emerald-500 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">تسجيل الدخول</Link>
                             </>
                         ) : (
                             <LogoutButton />

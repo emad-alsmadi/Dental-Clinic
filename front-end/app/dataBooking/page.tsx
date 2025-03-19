@@ -74,7 +74,7 @@ const BookingData: React.FC = () => {
         return;
       }
       if (response.status === 401) {
-        router.push("/Login");
+        router.push("/login");
       }
 
       if (!response.ok) {

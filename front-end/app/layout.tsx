@@ -1,32 +1,43 @@
-
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 import AuthChecker from "@/components/CheckAuth";
 
-const metadata: Metadata = {
-  title: "BeBo Ecommerce website app for shoppers",
-  description: "An Ecommerce app for eduction purposes",
+export const metadata: Metadata = {
+  title: "Dental Clinic | أفضل عيادة أسنان",
+  description: "احجز موعدك الآن في أفضل عيادة أسنان مع أطباء محترفين وبأحدث التقنيات.",
+  keywords: "طب الأسنان, حجز موعد, عيادة أسنان, تبييض الأسنان, تقويم الأسنان , رعاية طبية , زرع الأسنان , إزالة التصبغ بالليزر , جراحة الزرع" ,
+  openGraph: {
+    title: "Dental Clinic | أفضل عيادة أسنان",
+    description: "احجز موعدك الآن في أفضل عيادة أسنان مع أطباء محترفين وبأح  التقنيات.",
+    url: "https://odental.com",
+    type: "website",
+    images: [
+      {
+        url: "https://odental.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Dental Clinic",
+      },
+    ],
+  },
+  robots: "index, follow",
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="en">
+    <html lang="ar">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
       <body>
-        <div>
-          <AuthChecker />
-          <Header />
-          {children}
-          <Footer />
-        </div>
+        <AuthChecker />
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   );
 };
-
 export default RootLayout;
-
-
-

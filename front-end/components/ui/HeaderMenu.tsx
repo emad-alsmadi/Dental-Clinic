@@ -10,12 +10,12 @@ const HeaderMenu = () => {
                 <Link className={`hover:text-darkColor text-center  hoverEffect relative group ${pathname === link?.url && "text-darkColor"}`} key={link.id} href={link.url}>
                     {link?.title}
                     <span className={`absolute -bottom-0.5 left-1/2 w-0 h-0.5
-                                     bg-black hoverEffect group-hover:w-1/2 group-hover:left-0
-                                      ${pathname === link?.url && "w-1/2"}`}></span>
+                                    bg-black hoverEffect group-hover:w-1/2 group-hover:left-0
+                                    ${pathname === link?.url && "w-1/2"}`}></span>
 
                     <span className={`absolute -bottom-0.5 right-1/2 w-0 h-0.5
-                                     bg-black hoverEffect group-hover:w-1/2 group-hover:right-0
-                                      ${pathname === link?.url && "w-1/2"}`}></span>
+                                    bg-black hoverEffect group-hover:w-1/2 group-hover:right-0
+                                    ${pathname === link?.url && "w-1/2"}`}></span>
                 </Link>
             )}
         </div>
