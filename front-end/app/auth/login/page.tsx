@@ -29,6 +29,7 @@ const Login = () => {
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<{ message: string; type: string } | null>(null);
     const [successMessage, setSuccessMessage] = useState<string>("");
+    const [loading, setloading] = useState<boolean>(false);
 
     // تحقق عند تحميل المكون
     useEffect(() => {
@@ -67,6 +68,7 @@ const Login = () => {
         if (error) return;
 
         try {
+            setloading(true);
             const checkRegisterResponse = await fetch(`http://localhost:5000/api/check-register?email=${encodeURIComponent(email)}`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -92,32 +94,39 @@ const Login = () => {
             });
 
             if (loginResponse.ok) {
-                localStorage.setItem("userEmail", email);
-                localStorage.setItem("isLoggedIn", "true");
                 setSuccessMessage("تم تسجيل الدخول بنجاح!");
                 router.push("/");
+                window.location.reload();
             } else {
                 setError({ message: "فشل تسجيل الدخول، تحقق من البريد الإلكتروني وكلمة المرور.", type: "general" });
             }
         } catch (error) {
             setError({ message: "حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.", type: "general" });
+        } finally {
+            setloading(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-                <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">تسجيل الدخول</h1>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+            <div className="bg-white shadow-lg rounded-lg p-8 w-full  max-w-sm md:max-w-md lg:max-w-lg">
+                <h1 className="text-2xl md:text-3xl font-bold text-center text-blue-600 mb-6">تسجيل الدخول</h1>
 
                 <form onSubmit={handleLogin} className="space-y-5">
                     {/* حقل البريد الإلكتروني */}
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" /><input
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input
                             type="email"
                             placeholder="البريد الإلكتروني"
                             value={email}
                             onChange={handleEmailChange}
-                            className="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className={`w-full rounded-lg p-3 pl-10 focus:outline-none ${error?.type === "email" ? "border border-red-600"
+                                : "border border-gray-300 focus:ring-2 focus:ring-blue-400"}`}
                         />
                     </div>
 
@@ -129,21 +138,20 @@ const Login = () => {
                             placeholder="كلمة المرور"
                             value={password}
                             onChange={handlePasswordChange}
-                            className="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className={`w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none
+                                    ${error?.type === "password" ? "border-red-600" :
+                                    "focus:ring-2 focus:ring-blue-400"}`}
                         />
                     </div>
-                    {/* رسائل الأخطاء */}
                     {error && <ErrorMessage message={error.message} />}
 
-                    {/* رسائل النجاح */}
                     {successMessage && <SuccessMessage message={successMessage} />}
 
-                    {/* زر تسجيل الدخول */}
                     <button
                         type="submit"
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300"
                     >
-                        تسجيل الدخول
+                        {loading ? " ...جاري تسجيل الدخول" : "تسجيل الدخول"}
                     </button>
                 </form>
 
@@ -159,7 +167,7 @@ const Login = () => {
                     </Link>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 export default Login;

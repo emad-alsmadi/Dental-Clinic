@@ -25,7 +25,7 @@ const Dashboard = () => {
             ) : (
                 <div className="flex font-sans">
                     {/* الشريط الجانبي */}
-                    <aside className="w-64 bg-gray-900 text-white p-4 min-h-screen">
+                    <aside className="w-64 bg-darkColor/90 text-white p-4 min-h-screen">
                         <h2 className="text-2xl font-bold mb-10 mt-2 cursor-pointer" onClick={() => setActiveTab(undefined)}>Admin Dashboard</h2>
                         <ul className="space-y-12">
                             <li className="hover:text-gray-300  cursor-pointer" onClick={() => setActiveTab("appointments")}>

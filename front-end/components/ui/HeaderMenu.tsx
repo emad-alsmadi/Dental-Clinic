@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 const HeaderMenu = () => {
     const pathname = usePathname()
     return (
-        <div className={`hidden md:inline-flex items-center gap-7 text-lg xl:gap-10 xl:text-xl lg:gap-6 lg:text-lg font-bold`}>
+        <div className={`hidden md:flex md:flex-row-reverse items-center gap-7 text-lg xl:gap-10 xl:text-xl lg:gap-6 lg:text-lg font-semibold`}>
             {links.map(link =>
                 <Link className={`hover:text-darkColor text-center  hoverEffect relative group ${pathname === link?.url && "text-darkColor"}`} key={link.id} href={link.url}>
                     {link?.title}

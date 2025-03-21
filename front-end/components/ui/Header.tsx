@@ -7,30 +7,10 @@ import LogoutButton from '../LogoutButton';
 import MobileMenu from "./MobileMenu"
 import SearchBar from "./SearchBar"
 import srcImage from "@/public/images/logo_D.png"
-import { useEffect, useState } from 'react';
-import { usePathname } from "next/navigation";
-
+import useAuth from '@/hooks/useAuth';
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const pathname = usePathname(); // ملعرفة الصفحة الحالية
-    // تجديث حالة تسجيل الدخول عند تحميل الصفحة 
-    useEffect(() => {
-        const isLoggedInStatus = localStorage.getItem("isLoggedIn") === "true";
-        const isAdminStatus = localStorage.getItem("isAdmin") === "true";
-        setIsLoggedIn(isLoggedInStatus);
-        setIsAdmin(isAdminStatus)
-    }, [])
-    // تحديث isLoggined  عند تغيير الصفحة 
-    useEffect(() => {
-        const isLoggedInStatus = localStorage.getItem("isLoggedIn") === "true";
-        const isAdminStatus = localStorage.getItem("isAdmin") === "true";
-        setIsLoggedIn(isLoggedInStatus);
-        setIsAdmin(isAdminStatus);
-    }, [pathname])
-
-
+    const { isLoggedIn ,isAdmin } = useAuth();
     return (
         <>
             <div className={`bg-white border-b border-b-gray-400 pb-5`}>
@@ -52,10 +32,10 @@ const Header = () => {
                 </div>
                 <Container className="flex items-center justify-between gap-7 text-lightColor">
                     <div className="w-auto flex items-center justify-end gap-5">
-                        {!isLoggedIn ? (
+                        {!isLoggedIn && !isAdmin? (
                             <>
-                                <Link href="/auth/sign-up" className="bg-blue-400 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">اشتراك</Link>
-                                <Link href="/auth/login" className="bg-emerald-500 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">تسجيل الدخول</Link>
+                                <Link href="/auth/sign-up" className="bg-blue-700 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">اشتراك</Link>
+                                <Link href="/auth/login" className="bg-emerald-800 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70">تسجيل الدخول</Link>
                             </>
                         ) : (
                             <LogoutButton />

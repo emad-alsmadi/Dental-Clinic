@@ -9,7 +9,7 @@ const ClinicPartners = () => {
         <div className="max-h-screen mx-auto my-20">
             <h1 className="text-2xl font-bold text-center text-darkColor/90">شركاء اودينتال</h1>
             <p className="text-gray-700/80 mt-5 text-center text-sm">ا فخورون بشراكتنا مع مؤسسات رائدة في مجال الصحة الرقمية، مما يمكننا من تقديم خدمات مبتكرة وعالية الجودة المستخدمي برامج الرعاية الصحية عن بعد تعاوننا مع شركائنا يعزز الوصول إلى الرعاية الصحية عن بعد ويساهم في تحسين جودة خدمات الرعاية الصحية</p>
-            <div className="flex justify-center gap-8 my-20">
+            <div className="flex flex-col items-center justify-center md:my-14 md:flex-row gap-8 my-20">
                 <Image src={icon1} alt="vifor" />
                 <Image src={icon2} alt="tena" />
                 <Image src={icon3} alt="lrp" />

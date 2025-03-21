@@ -3,32 +3,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import Image from "next/image";
-import image1 from "@/public/images/person-1.png";
-import image2 from "@/public/images/person-2.png";
-import image3 from "@/public/images/person-3.png";
-const testimonials = [
-    {
-        id: 1,
-        name: "م.عماد الصمادي",
-        image: image1,
-        rating: 5,
-        text: "تطبيق رائع ساعدني أتواصل مع دكتور خصوصاً لما تكون عندي مشكلة صحية ضرورية",
-    },
-    {
-        id: 2,
-        name: "أ.ماريا هيثم",
-        image: image2,
-        rating: 5,
-        text: "تواصلت مع طبيب عبر التطبيق وتفاجأت بسرعة الرد والاستجابة، وكان الطبيب متعاون جدًا.",
-    },
-    {
-        id: 3,
-        name: "جابر سمير",
-        image: image3,
-        rating: 4,
-        text: "كنت مترددة من مشاركة بياناتي الشخصية، ولكن بعد تجربة الخدمة والتواصل مع الطبيب شعرت بالأمان والخصوصية.",
-    },
-];
+import { testimonials } from "@/constants/testimoials";
+
 
 const Testimonials = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -55,9 +31,9 @@ const Testimonials = () => {
                         className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center text-center space-y-4"
                     >
                         <Quote className="text-gray-300 w-8 h-8" />
-                        <p className="text-lg text-gray-700">"{testimonials[currentIndex].text}"</p>
+                        <p className="text-base text-gray-700">"{testimonials[currentIndex].text}"</p>
                         <div className="flex items-center space-x-2">
-                            <Image src={testimonials[currentIndex].image} alt={testimonials[currentIndex].name}
+                            <Image src={testimonials[currentIndex].image} width={48} height={48} alt={testimonials[currentIndex].name}
                                 className="w-12 h-12 rounded-full object-cover border-2 border-gray-300" />
                             <span className="font-semibold text-lg">{testimonials[currentIndex].name}</span>
                         </div>
@@ -76,9 +52,8 @@ const Testimonials = () => {
                     <button
                         key={index}
                         onClick={() => nextSlide(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            index === currentIndex ? "bg-blue-500 w-4 h-4" : "bg-gray-300"
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? "bg-blue-500 w-4 h-4" : "bg-gray-300"
+                            }`}
                     />
                 ))}
             </div>

@@ -1,5 +1,3 @@
-
-
 interface LinksType {
     id: number;
     name: string;
@@ -9,7 +7,7 @@ interface LinksType {
     imageBack: string;
 }
 
-export const doctors = [
+export const doctors: LinksType[] = [
     {
         id: 1,
         name: "د.  تالا محفوظ",

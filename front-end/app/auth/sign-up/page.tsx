@@ -67,11 +67,7 @@ const SignUp = () => {
                 setStatusMessage({ error:"", success: "تم التسجيل بنجاح" });
                 setTimeout(() => {
                     router.push("/");
-                }, 1500);
-                localStorage.setItem("userEmail", formData.email);
-                localStorage.setItem("isLoggedIn", "true");
-                console.log("login successful")
-                
+                }, 1500);              
             } else {
                 setStatusMessage({ ...statusMessage, error: "حدث خطأ أثناء التسجيل" });
             }
@@ -82,13 +78,13 @@ const SignUp = () => {
 
     return (
         <motion.div
-            className="flex justify-center items-center my-6"
+            className="flex justify-center items-center my-6 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
         >
             <motion.div
-                className="bg-white/70 rounded-lg shadow-lg relative overflow-hidden w-96 min-h-96 p-6"
+                className="bg-white/70 rounded-lg shadow-lg relative overflow-hidden w-full  max-w-sm md:max-w-md lg:max-w-lg min-h-96 p-6"
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5 }}
@@ -113,7 +109,7 @@ const SignUp = () => {
 
                     <motion.button
                         type="submit"
-                        className="bg-blue-600 text-sm font-bold hover:text-darkColor tracking-wider mt-4 mb-2 w-40 py-3 text-white rounded-lg hover:scale-110 transition-transform duration-300"
+                        className="flex justify-center items-center bg-blue-600 text-sm font-bold hover:text-darkColor tracking-wider mt-4 mb-2 w-40 py-3 text-white rounded-lg hover:scale-110 transition-transform duration-300"
                         whileHover={{ scale: 1.05 }}
                     >
                         التسجيل
