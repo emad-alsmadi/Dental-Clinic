@@ -308,15 +308,20 @@ def delete_patient(patient_id):
     if not session.get('is_admin', False):
         return jsonify({'error': 'غير مصرح به، انت لست مديرًا'}), 401
 
+    
     account_patients = User.query.filter_by(is_admin=False).all()
     try:
+        if not account_patients[patient_id] :
+            return jsonify({"error":  "المريض غير موجود"}), 404
+        
         db.session.delete(account_patients[patient_id])
         db.session.commit()
         session.modified = True
         return jsonify({"message": "تم حذف المستخدم بنجاح"}), 200
     
     except Exception as e:
-        return jsonify({"error": "حدث خطأ أثناء الحذف"}), 500
+        db.session.rollback()
+        return jsonify({"error": f" : حدث خطأ أثناء الحذف : {str(e)}"}), 500
 
 # ✅ تشغيل التطبيق
 if __name__ == '__main__':

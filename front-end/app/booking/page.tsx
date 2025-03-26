@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
+import { doctors } from "@/constants/doctors";
 interface Booking {
     id: string;
     name: string;
@@ -56,8 +57,7 @@ const Booking = () => {
                 credentials: "include",
                 body: JSON.stringify(formData),
             });
-            const result = await response.json();
-            if (!response) {
+            if (!response.ok) {
                 setError("حدث خطأ أثناء إرسال البيانات!");  // إضافة  لتجنب حدوث خطأ إذا كانت result.error غير موجودة
             }
             if (response.status === 409) {
@@ -77,7 +77,7 @@ const Booking = () => {
             setIsBooked(true);
         } catch (err: any) {
             console.error("خطأ في الحجز:", err);
-            setError(err.message || "تعذر الاتصال بالسيرفر، حاول مرة أخرى.");  // إضافة  لمعالجة الأخطاء بشكل أفضل
+            setError("تعذر الاتصال بالسيرفر، حاول مرة أخرى.");
         } finally {
             setLoading(false);
         }
@@ -93,35 +93,35 @@ const Booking = () => {
 
                 <form onSubmit={handleSubmit} className="text-right">
                     <div className="mb-4">
-                        <label htmlFor="name" className="block text-gray-700">الاسم</label>
+                        <label htmlFor="name" className="pb-2 block text-gray-700">الاسم</label>
                         <input type="text" id="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" placeholder="أدخل اسمك" />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-700">البريد الإلكتروني</label>
+                        <label htmlFor="email" className="pb-2 block text-gray-700">البريد الإلكتروني</label>
                         <input type="email" id="email" value={formData.email} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="contact" className="block text-gray-700">رقم التواصل</label>
+                        <label htmlFor="contact" className="pb-2 block text-gray-700">رقم التواصل</label>
                         <input type="tel" id="contact" value={formData.contact} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="date" className="block text-gray-700">تاريخ الوصول</label>
+                        <label htmlFor="date" className="pb-2 block text-gray-700">تاريخ الوصول</label>
                         <input type="date" id="date" value={formData.date} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="time" className="block text-gray-700">وقت الوصول</label>
+                        <label htmlFor="time" className="pb-2 block text-gray-700">وقت الوصول</label>
                         <input type="time" id="time" value={formData.time} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" />
                     </div><div className="mb-4">
-                        <label htmlFor="address" className="block text-gray-700">العنوان</label>
+                        <label htmlFor="address" className="pb-2 block text-gray-700">العنوان</label>
                         <input type="text" id="address" value={formData.address} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" />
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="speciality" className="block text-gray-700">التخصص</label>
+                        <label htmlFor="speciality" className="pb-2 block text-gray-700">التخصص</label>
                         <select id="speciality" value={formData.speciality} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" >
                             <option value="">اختر التخصص</option>
                             <option value="dentistry">طب أسنان</option>
@@ -129,15 +129,12 @@ const Booking = () => {
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="doctor" className="block text-gray-700">الطبيب</label>
+                        <label htmlFor="doctor" className="pb-2 block text-gray-700">الطبيب</label>
                         <select id="doctor" value={formData.doctor} onChange={handleChange} className="w-full px-3 py-2 border rounded-md text-right" >
                             <option value="">اختر الطبيب</option>
-                            <option value="د. سميث">د. رامي بلال</option>
-                            <option value="د. عماد الصمادي">د. عماد الصمادي</option>
-                            <option value="د. مريم ابراهيم">د. حسان إبراهيم</option>
-                            <option value="د. جابر مخلالاتي">د. جابر مخلالاتي</option>
-                            <option value="د. غازي حمدان">د. غازي حمدان</option>
-                            <option value="د. جونز">د. سمير الخالد</option>
+                            {doctors.map((doctor, index) => (
+                                <option key={index} value={`${doctor.name}`}>{doctor.name}.</option>
+                            ))}
                         </select>
                     </div>
 

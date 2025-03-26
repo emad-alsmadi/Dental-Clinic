@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useAuthAdmin from "@/hooks/useAuthAdmin";
 import { motion } from "framer-motion";
@@ -30,7 +30,11 @@ const LoginAdmin = () => {
     const { isAdmin } = useAuthAdmin();
 
     const router = useRouter();
-
+    useEffect(() => {
+        if (isAdmin) {
+            router.push("/");
+        }
+    }, [isAdmin, router]);
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -79,8 +83,12 @@ const LoginAdmin = () => {
 
                 if (loginAdminResponse.ok) {
                     setSuccessMessage("تم تسجيل الدخول بنجاح");
-                    window.location.reload();
-                    router.push("/");
+                    console.log("تم تسجيل الدخول بنجاح");
+                    window.localStorage.setItem("isLoggIn", "true");
+                    window.localStorage.setItem("isAdmin", "true");
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 500);
                 } else {
                     setError({
                         message: "فشل تسجيل الدخول، تحقق من البيانات.", type: "general"
@@ -114,8 +122,8 @@ const LoginAdmin = () => {
                             value={email}
                             onChange={handleEmailChange}
                             className={`w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none
-                                    ${error?.type === " email" ? "border border-red-600"
-                                    : "border border-gray-300 focus:ring-2 focus:ring-blue-400"}`}
+                                    ${error?.type === "email" ? "border-red-600"
+                                    : "focus:ring-2 focus:ring-blue-400"}`}
                         />
                     </div>
 
@@ -128,8 +136,8 @@ const LoginAdmin = () => {
                             value={password}
                             onChange={handlePasswordChange}
                             className={`w-full border border-gray-300 rounded-lg p-3 pl-10 focus:outline-none
-                                    ${error?.type === " password" ? "border border-red-600"
-                                    : "border border-gray-300 focus:ring-2 focus:ring-blue-400"}`}
+                                    ${error?.type === "password" ? "border-red-600"
+                                    : "ocus:ring-2 focus:ring-blue-400"}`}
                         />
                     </div>
                     {error && <ErrorMessage message={error.message} />}

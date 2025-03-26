@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/ui/Header";
-import Footer from "@/components/ui/Footer";
-import AuthChecker from "@/components/CheckAuth";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import AuthChecker from "@/components/auth/CheckAuth";
 
 export const metadata: Metadata = {
   title: "Dental Clinic | أفضل عيادة أسنان",

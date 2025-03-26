@@ -80,12 +80,7 @@ const Login = () => {
                 setError({ message: "هذا البريد الإلكتروني غير مسجل. الرجاء التسجيل أولاً.", type: "general" });
                 return;
             }
-        } catch (err) {
-            setError({ message: "حدث خطأ أثناء تسجيل الدخول.", type: "general" });
-            return;
-        }
-
-        try {
+            // 
             const loginResponse = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -95,8 +90,10 @@ const Login = () => {
 
             if (loginResponse.ok) {
                 setSuccessMessage("تم تسجيل الدخول بنجاح!");
-                router.push("/");
-                window.location.reload();
+                window.localStorage.setItem("isLoggIn", "true");
+                setTimeout(() => {
+                    router.push("/");
+                }, 500);
             } else {
                 setError({ message: "فشل تسجيل الدخول، تحقق من البريد الإلكتروني وكلمة المرور.", type: "general" });
             }
@@ -105,6 +102,7 @@ const Login = () => {
         } finally {
             setloading(false);
         }
+    
     };
 
     return (

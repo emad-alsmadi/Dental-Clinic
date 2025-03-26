@@ -2,8 +2,8 @@ import Slider from "./Slider";
 import JoinPlatformDoctors from "./JoinPlatformDoctors";
 import FAQPage from "./Faq";
 import ClinicPartners from "./ClinicPartners";
-import Testimonials from "./Testimoials";
-import Stats from "./Stats";
+import Testimonials from "../home/Testimoials";
+import Stats from "../ui/Stats";
 const HomeBanner = () => {
   return (
     <div className="mb-8">

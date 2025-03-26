@@ -1,7 +1,7 @@
 "use client";
 import { motion } from 'framer-motion';
 
-const JoinPlatform =()=> {
+const JoinPlatformDoctors =()=> {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -60,4 +60,4 @@ const JoinPlatform =()=> {
         </motion.div>
     );
 }
-export default JoinPlatform;
+export default JoinPlatformDoctors;

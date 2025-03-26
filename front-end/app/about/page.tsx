@@ -1,4 +1,3 @@
-
 "use client";
 import { motion } from "framer-motion";
 import Head from "next/head";
@@ -8,7 +7,6 @@ import bgImage from "@/public/images/dental-clinic5.png";
 import dentalImplants1 from "@/public/images/dental-implants.png";
 import dentalImplants2 from "@/public/images/dental-implants2.png";
 import { Stethoscope, Microscope, Heart, Hospital, Syringe, Droplet, BriefcaseMedical, Cross, Calendar } from "lucide-react";
-
 
 const About = () => {
     return (

@@ -2,18 +2,30 @@ import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import Link from "next/link"
 import { links } from "@/constants/index";
-import { usePathname } from "next/navigation"
-import SocialMedia from './SocialMedia';
+import SocialMedia from '../ui/SocialMedia';
 import { useOutSidClick } from '@/hooks/useOutsideClick';
-
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import LogoutButton from '../auth/LogoutButton';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
 const Sidebar = ({ isOpen, onClose }: Props) => {
 
-  const pathname = usePathname()
+  const pathname = usePathname();
+  let isLoggedIn = false;
+  let isAdmin = false;
   const sidebarRef = useOutSidClick<HTMLDivElement>(onClose);
+
+  useEffect(() => {
+    isLoggedIn = window.localStorage.getItem("isLoggin") == "true";
+    isAdmin = window.localStorage.getItem("isAdmin") == "true";
+  }, [])
+  useEffect(() => {
+    isLoggedIn = window.localStorage.getItem("isLoggIn") == "true";
+    isAdmin = window.localStorage.getItem("isAdmin") == "true";
+  }, [pathname])
 
   return (
     <div className={`fixed inset-y-0 left-0 z-50 bg-darkColor/50 shadow-xl hoverEffect
@@ -32,12 +44,27 @@ const Sidebar = ({ isOpen, onClose }: Props) => {
         </div>
         <div className="flex flex-col gap-3.5 text-base font-semibold tracking-wide">
           {links.map(link =>
-            <Link className={`hover:text-white hoverEffect w-24 ${pathname === link?.url && "text-white"}`} key={link.id} href={link.url}>
+            <Link className={`hover:text-white hoverEffect w-28 ${pathname === link?.url && "text-white"}`} key={link.id} href={link.url}>
               {link?.title}
             </Link>
           )}
         </div>
         <SocialMedia />
+        <div className="flex flex-col items-start justify-between">
+
+          {!isLoggedIn && !isAdmin ? (
+            <>
+              <Link href="/auth/sign-up" className={`hover:text-white hoverEffect w-28`}>
+                اشتراك
+              </Link>
+              <Link href="/auth/login" className={`hover:text-white hoverEffect w-28`}>
+                تسجيل الدخول
+              </Link>
+            </>
+          ) : (
+            <LogoutButton />
+          )}
+        </div>
       </motion.div>
     </div>
   )

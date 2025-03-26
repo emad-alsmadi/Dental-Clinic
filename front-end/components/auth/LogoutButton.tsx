@@ -15,7 +15,7 @@ const LogoutButton = () => {
             });
 
             if (response) {
-                localStorage.removeItem("isLoggedIn"); // إزالة حالة تسجيل الدخول
+                localStorage.removeItem("isLoggIn"); // إزالة حالة تسجيل الدخول
                 localStorage.removeItem("userEmail"); // إزالة بيانات تسجيل الدخول
                 localStorage.removeItem("isAdmin"); // إزالة بيانات تسجيل الدخول
                 window.location.reload();
@@ -29,9 +29,7 @@ const LogoutButton = () => {
 
     return (
         <motion.button
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.5 }}
-            className="text-white bg-darkColor px-6 py-2 rounded-sm"
+            className="text-darkColor md:px-6 py-2 text-base font-bold"
         >
             <Link href="/" onClick={handleLogout}>
                 تسجيل الخروج

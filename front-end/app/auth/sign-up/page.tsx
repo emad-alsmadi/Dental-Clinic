@@ -64,10 +64,11 @@ const SignUp = () => {
             });
 
             if (response.status === 201) {
-                setStatusMessage({ error:"", success: "تم التسجيل بنجاح" });
+                setStatusMessage({ error: "", success: "تم التسجيل بنجاح" });
+                window.localStorage.setItem("isLoggIn", "true");
                 setTimeout(() => {
                     router.push("/");
-                }, 1500);              
+                }, 500);              
             } else {
                 setStatusMessage({ ...statusMessage, error: "حدث خطأ أثناء التسجيل" });
             }
