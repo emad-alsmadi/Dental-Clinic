@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
+import Header from "@/components/ui/Header";
 import Footer from "@/components/layout/Footer";
 import AuthChecker from "@/components/auth/CheckAuth";
 
 export const metadata: Metadata = {
   title: "Dental Clinic | أفضل عيادة أسنان",
   description: "احجز موعدك الآن في أفضل عيادة أسنان مع أطباء محترفين وبأحدث التقنيات.",
-  keywords: "طب الأسنان, حجز موعد, عيادة أسنان, تبييض الأسنان, تقويم الأسنان , رعاية طبية , زرع الأسنان , إزالة التصبغ بالليزر , جراحة الزرع" ,
+  keywords: "طب الأسنان, حجز موعد, عيادة أسنان, تبييض الأسنان, تقويم الأسنان , رعاية طبية , زرع الأسنان , إزالة التصبغ بالليزر , جراحة الزرع",
   openGraph: {
     title: "Dental Clinic | أفضل عيادة أسنان",
     description: "احجز موعدك الآن في أفضل عيادة أسنان مع أطباء محترفين وبأح  التقنيات.",

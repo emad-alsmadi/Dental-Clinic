@@ -1,11 +1,11 @@
 "use client"
 import Link from 'next/link';
 import Image from 'next/image'
-import Container from '../ui/Container';
+import Container from './Container';
 import LogoutButton from '../auth/LogoutButton';
 import HeaderMenu from '../home/HeaderMenu';
 import MobileMenu from '../home/MobileMenu';
-import SearchBar from "../ui/SearchBar";
+import SearchBar from "./SearchBar";
 import srcImage from "@/public/images/logo_D.png";
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -52,7 +52,6 @@ const Header = () => {
                 {/* القائمة الرئيسية */}
                 < Container className="flex flex-wrap items-center justify-between gap-5 text-lightColor" >
                     <div className="w-auto flex items-center justify-end md:gap-2 lg:gap-5">
-
                         {!isLoggedIn && !isAdmin ? (
                             <>
                                 <Link href="/auth/sign-up" className="bg-blue-700 py-3 px-5 rounded-md text-white text-sm font-semibold hover:text-white/70 hidden md:block">
