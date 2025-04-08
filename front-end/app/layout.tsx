@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster"
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/ui/Header";
@@ -35,6 +36,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <AuthChecker />
         <Header />
         {children}
+        <Toaster />
         <Footer />
       </body>
     </html>

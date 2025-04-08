@@ -1,4 +1,5 @@
 "use client";
+import { useToast } from "@/hooks/use-toast"
 import { useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { doctors } from "@/constants/doctors";
@@ -16,6 +17,10 @@ interface Booking {
 const API_URL = "http://localhost:5000/api/bookings";
 
 const Booking = () => {
+    const { toast } = useToast();
+
+
+
     const [isBooked, setIsBooked] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -62,6 +67,14 @@ const Booking = () => {
             }
             if (response.status === 409) {
                 setError("لديك بالفعل حجز في هذا الموعد");
+                toast({
+                    variant: "destructive",
+                    title: "خطأ!",
+                    description: "لديك بالفعل حجز في هذا الموعد",
+                });
+                return;
+            }
+            if (response.status === 410) {
                 return;
             }
             setFormData({
@@ -75,9 +88,16 @@ const Booking = () => {
                 doctor: "",
             });
             setIsBooked(true);
+            toast({
+                title: "تم الحجز بنجاح",
+                description: "سيتم التواصل معك قريبًا.",
+            });
         } catch (err: any) {
-            console.error("خطأ في الحجز:", err);
-            setError("تعذر الاتصال بالسيرفر، حاول مرة أخرى.");
+            toast({
+                variant: "destructive",
+                title: "خطأ!",
+                description: " حدثت مشكلة أثناء إرسال،الطلب تعذر الاتصال بالسيرفر حاول مرة أخرى..",
+            });
         } finally {
             setLoading(false);
         }

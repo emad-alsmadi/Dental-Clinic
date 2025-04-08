@@ -215,15 +215,39 @@ def create_booking():
 
 
     # التحقق من وجود حجز بنفس الموعد لنفس المستخدم  
-    existing_booking = Booking.query.filter_by(  
-        user_id=session['id'], 
-        date=data['date'],  
-        time=data['time']  
-    ).first()  
+    # التحقق من وجود حجز لنفس الطبيب بنفس التاريخ والوقت (حتى لو من مستخدم مختلف)
+    conflicting_booking = Booking.query.filter_by(
+        doctor=data['doctor'],
+        date=data['date'],
+        time=data['time']
+    ).first()
 
-    if existing_booking:  
-        return jsonify({'error': 'لديك بالفعل حجز في هذا الموعد'}), 409  
+    if conflicting_booking:
+        return jsonify({'error': 'الطبيب لديه حجز بالفعل في هذا الوقت والتاريخ'}), 409
 
+    # التحقق من عدد الحجوزات اليومية للطبيب
+    doctor_bookings_count = Booking.query.filter_by(
+        doctor=data['doctor'],
+        date=data['date']
+    ).count()
+    
+
+    # تحديد الحد حسب اسم الطبيب
+    doctor_limits = {
+        "د.  تالا محفوظ": 30,
+        "د. سمير الخالد": 40,
+        "د. حسان إبراهيم": 40,
+        "د. جابر مخلالاتي": 40,
+        "د. غازي حمدان": 40,
+        "د. رامي بلال": 40,
+        "د. سامر الحسن": 40,
+        # أضف الأطباء وحدودهم هنا
+    }
+
+    limit = doctor_limits.get(data['doctor'], 30)  # افتراضيًا 30 إذا الطبيب غير موجود بالـ dict
+
+    if doctor_bookings_count >= limit:
+        return jsonify({'error': f'تم الوصول للحد الأقصى من الحجوزات اليومية للطبيب {data["doctor"]}'}), 410
     new_booking = Booking(
         user_id=session['id'],  # <-- ربط الحجز بالمستخدم المسجل
         name=data['name'],

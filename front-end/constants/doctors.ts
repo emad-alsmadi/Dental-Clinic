@@ -67,7 +67,7 @@ export const doctors: LinksType[] = [
     },
     {
         id: 8,
-        name: "د. رامي بلال",
+        name: "د. سامر الحسن",
         speciality: "طب أسنان الأطفال",
         experience: "سنة 18",
         imageFront: "/images/images-doctors/doctor-8.png",
