@@ -18,11 +18,12 @@ const Doctors = () => {
                 👨‍⚕️ قائمة الأطباء
             </h1>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {doctors.map((doctor) => (
                     <motion.div
                         key={doctor.id}
                         whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.5 }}
                         className="bg-white shadow-lg rounded-xl overflow-hidden transition-all duration-300"
                     >
                         <div
@@ -33,7 +34,7 @@ const Doctors = () => {
                             <motion.div
                                 initial={false}
                                 animate={{ rotateY: flipped[doctor.id] ? 360 : 0 }}
-                                transition={{ duration: 0.6 }}
+                                transition={{ duration: 1 }}
                                 className="absolute inset-0 w-full h-full"
                                 style={{ backfaceVisibility: "hidden" }}
                             >

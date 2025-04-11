@@ -4,7 +4,12 @@ import "./globals.css";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/layout/Footer";
 import AuthChecker from "@/components/auth/CheckAuth";
+import { Cairo } from "next/font/google";
 
+const cairo = Cairo({
+  subsets: ["arabic"],
+  weight: ["200", "300", "400", "500", "600", "700"], // أو حسب الحاجة
+});
 export const metadata: Metadata = {
   title: "Dental Clinic | أفضل عيادة أسنان",
   description: "احجز موعدك الآن في أفضل عيادة أسنان مع أطباء محترفين وبأحدث التقنيات.",
@@ -32,7 +37,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body>
+      <body className={cairo.className}>
         <AuthChecker />
         <Header />
         {children}

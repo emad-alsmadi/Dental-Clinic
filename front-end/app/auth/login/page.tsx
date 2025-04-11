@@ -1,5 +1,6 @@
 "use client";
 import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +25,7 @@ const SuccessMessage = ({ message }: { message: string }) => (
 
 const Login = () => {
     const router = useRouter();
+    const { toast } = useToast();
     const { isLoggedIn } = useAuth();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -78,6 +80,11 @@ const Login = () => {
             const checkRegisterData = await checkRegisterResponse.json();
             if (!checkRegisterData.registered) {
                 setError({ message: "هذا البريد الإلكتروني غير مسجل. الرجاء التسجيل أولاً.", type: "general" });
+                toast({
+                    variant: "destructive",
+                    title: "خطأ!",
+                    description: "هذا البريد الإلكتروني غير مسجل. الرجاء التسجيل أولاً."
+                });
                 return;
             }
             // 
@@ -89,20 +96,33 @@ const Login = () => {
             });
 
             if (loginResponse.ok) {
-                setSuccessMessage("تم تسجيل الدخول بنجاح!");
+                toast({
+                    title: "تم تسجيل الدخول بنجاح",
+                    description: " مرحبا بعودتك",
+                    duration: 3000,
+                    className: "bg-green-600 text-white border-0",
+                });
                 window.localStorage.setItem("isLoggIn", "true");
                 setTimeout(() => {
                     router.push("/");
                 }, 500);
             } else {
-                setError({ message: "فشل تسجيل الدخول، تحقق من البريد الإلكتروني وكلمة المرور.", type: "general" });
+                toast({
+                    variant: "destructive",
+                    title: "خطأ!",
+                    description: "فشل تسجيل الدخول، تحقق من البريد الإلكتروني وكلمة المرور.",
+                });
             }
         } catch (error) {
-            setError({ message: "حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.", type: "general" });
+            toast({
+                variant: "destructive",
+                title: "خطأ!",
+                description: " حدثت مشكلة أثناء إرسال،الطلب تعذر الاتصال بالسيرفر حاول مرة أخرى..",
+            });
         } finally {
             setloading(false);
         }
-    
+
     };
 
     return (

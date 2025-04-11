@@ -1,6 +1,6 @@
 "use client";
-import Sidebar from "@/components/dashboard/Sidebar";
-import Navbar from "@/components/dashboard/Navbar";
+import Sidebar from "@/app/components/dashboard/Sidebar";
+import Navbar from "@/app/components/dashboard/Navbar";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";

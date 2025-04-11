@@ -18,13 +18,8 @@ const API_URL = "http://localhost:5000/api/bookings";
 
 const Booking = () => {
     const { toast } = useToast();
-
-
-
     const [isBooked, setIsBooked] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [errorCheckLoginStatus, setErrorCheckLoginStatus] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -53,7 +48,6 @@ const Booking = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
         setIsBooked(false);
         try {
             const response = await fetch(API_URL, {
@@ -62,11 +56,7 @@ const Booking = () => {
                 credentials: "include",
                 body: JSON.stringify(formData),
             });
-            if (!response.ok) {
-                setError("حدث خطأ أثناء إرسال البيانات!");  // إضافة  لتجنب حدوث خطأ إذا كانت result.error غير موجودة
-            }
             if (response.status === 409) {
-                setError("لديك بالفعل حجز في هذا الموعد");
                 toast({
                     variant: "destructive",
                     title: "خطأ!",
@@ -91,6 +81,7 @@ const Booking = () => {
             toast({
                 title: "تم الحجز بنجاح",
                 description: "سيتم التواصل معك قريبًا.",
+                className: "bg-green-600 text-white border-0",
             });
         } catch (err: any) {
             toast({
@@ -103,13 +94,10 @@ const Booking = () => {
         }
     };
 
-
     return (
         <div className="bg-gray-100 p-10 min-h-screen flex items-center justify-center">
             <div className="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-6 text-right">حجز موعد</h2>
-
-                {errorCheckLoginStatus && <p className="text-red-500 text-xl font-bold text-center my-7">{errorCheckLoginStatus}</p>}
 
                 <form onSubmit={handleSubmit} className="text-right">
                     <div className="mb-4">
@@ -167,8 +155,6 @@ const Booking = () => {
                 </form>
 
                 {isBooked && <p className="my-6 text-green-600 text-center">تم الحجز بنجاح!</p>}
-
-                {error && <p className="my-5 text-red-500 text-center">{error}</p>}
             </div>
         </div>
     );

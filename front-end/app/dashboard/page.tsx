@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useAuthAdmin from "@/hooks/useAuthAdmin";
-import Cards from "@/components/dashboard/Cards";
+import Cards from "@/app/components/dashboard/Cards";
 const Dashboard = () => {
     const { isLoading, isAdmin } = useAuthAdmin();
     const router = useRouter();

@@ -1,4 +1,5 @@
 "use client";
+import { toast, useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import useCheckRegister from "@/hooks/useCheckRegister";
 
 const SignUp = () => {
     const router = useRouter();
+    const { toast } = useToast();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -15,7 +17,6 @@ const SignUp = () => {
     });
 
     const [errors, setErrors] = useState({ email: "", password: "", message: "" });
-    const [statusMessage, setStatusMessage] = useState({ success: "", error: "" });
 
     const { checkRegisterStatus, error } = useCheckRegister();
 
@@ -24,7 +25,7 @@ const SignUp = () => {
         setFormData({ ...formData, [name]: value });
 
         if (name === "password") {
-            setErrors({ ...errors, password: value.length < 8 ? "كلمة المرور يجب أن تكون 8 أحرف على الأقل.": ""});
+            setErrors({ ...errors, password: value.length < 8 ? "كلمة المرور يجب أن تكون 8 أحرف على الأقل." : "" });
         } else if (name === "email") {
             const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             setErrors({ ...errors, email: emailPattern.test(value) ? "" : "البريد الإلكتروني غير صالح." });
@@ -34,7 +35,6 @@ const SignUp = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setErrors({ email: "", password: "", message: "" });
-        setStatusMessage({ success: "", error: "" });
 
         if (!formData.username || !formData.password || !formData.passwordR || !formData.email) {
             setErrors({ ...errors, message: "يرجى ملء جميع الحقول." });
@@ -42,16 +42,16 @@ const SignUp = () => {
             return;
         }
 
-        if (formData.password !== formData.passwordR) {
-            setErrors({ ...errors, password: "كلمة المرور غير متطابقة." });
-            return;
-        }
-
+        if (formData.password !== formData.passwordR) return;
         if (errors.password || errors.email || errors.message) return;
 
         const userExists = await checkRegisterStatus(formData.email);
         if (userExists.registered) {
-            setStatusMessage({ ...statusMessage, error: "البريد الإلكتروني مستخدم بالفعل." });
+            toast({
+                variant: "destructive",
+                title: "خطأ!",
+                description: ".البريد الإلكتروني مستخدم بالفعل",
+            });
             return;
         };
 
@@ -64,16 +64,29 @@ const SignUp = () => {
             });
 
             if (response.status === 201) {
-                setStatusMessage({ error: "", success: "تم التسجيل بنجاح" });
+                toast({
+                    title: "تم تسجيل الدخول بنجاح",
+                    description: "اهلا بك",
+                    duration: 3000,
+                    className: "bg-green-600 text-white border-0",
+                });
                 window.localStorage.setItem("isLoggIn", "true");
                 setTimeout(() => {
                     router.push("/");
-                }, 500);              
+                }, 500);
             } else {
-                setStatusMessage({ ...statusMessage, error: "حدث خطأ أثناء التسجيل" });
+                toast({
+                    variant: "destructive",
+                    title: "خطأ!",
+                    description: "حدث خطأ أثناء التسجيل",
+                });
             }
         } catch {
-            setStatusMessage({ ...statusMessage, error: "حدث خطأ في الاتصال بالسيرفر" });
+            toast({
+                variant: "destructive",
+                title: "خطأ!",
+                description: " حدثت مشكلة أثناء إرسال،الطلب تعذر الاتصال بالسيرفر حاول مرة أخرى..",
+            });
         }
     };
 
@@ -117,9 +130,6 @@ const SignUp = () => {
                     </motion.button>
 
                     <p className="mb-4">لديك حساب؟ <Link href="/Login" className="text-blue-800">تسجيل دخول</Link></p>
-
-                    {statusMessage.error && <p className="text-red-500 py-3 text-center">{statusMessage.error}</p>}
-                    {statusMessage.success && <p className="text-green-500 py-3 text-center">{statusMessage.success}</p>}
                     {errors.message && <p className="text-red-500 py-2 text-center">{errors.message}</p>}
                 </form>
             </motion.div>

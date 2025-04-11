@@ -1,5 +1,5 @@
 
-import Doctors from "@/components/ui/Doctors"
+import Doctors from "@/app/components/dashboard/Doctors"
 const DoctorsPage = () => {
   return (
     <div>

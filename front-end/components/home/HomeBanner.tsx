@@ -2,7 +2,7 @@ import Slider from "./Slider";
 import JoinPlatformDoctors from "./JoinPlatformDoctors";
 import FAQPage from "./Faq";
 import ClinicPartners from "./ClinicPartners";
-import Testimonials from "../home/Testimoials";
+import Testimonials from "./Testimoials";
 import Stats from "../ui/Stats";
 const HomeBanner = () => {
   return (

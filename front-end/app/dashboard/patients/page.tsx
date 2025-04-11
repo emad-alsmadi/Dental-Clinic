@@ -10,8 +10,8 @@ import {
     DialogTitle,
     DialogDescription,
     DialogClose,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "@/app/components/ui/dialog";
+import { Button } from "@/app/components/ui/button";
 import useAuthAdmin from "@/hooks/useAuthAdmin";
 import { useRouter } from "next/navigation";
 
